@@ -1,0 +1,107 @@
+/************  Middle Menu *********/
+
+.menu_middle_area .menu_middle .menu_center {
+	width: 100%;
+}
+
+body.menu_left .menu_middle_area .menu_middle .menu_left {
+	width: 33%;
+	display: inline-block;
+	vertical-align:top;
+}
+
+body.menu_left .menu_middle_area .menu_middle .menu_center {
+	width: 66%;
+	display: inline-block;
+	vertical-align:bottom;
+}
+
+body.menu_right .menu_middle_area .menu_middle .menu_right {
+	width: 33.3333%;
+	float: right;
+}
+
+body.menu_right .menu_middle_area .menu_middle .menu_center {
+	width: 66.3333%;
+	float: left;
+}
+
+body.both_menu .menu_middle_area .menu_middle .menu_left {
+	width: 50%;
+	float: left;
+}
+
+body.both_menu .menu_middle_area .menu_middle .menu_right {
+	width: 50%;
+	float: right;
+}
+
+body.menu_center .menu_middle_area .menu_middle .menu_left {
+	width: 33.3333%;
+	float: left;
+}
+
+body.menu_center .menu_middle_area .menu_middle .menu_center {
+	width: 33.3333%;
+}
+
+body.menu_center .menu_middle_area .menu_middle .menu_right {
+	width: 33.3333%;
+	float: right;
+}
+
+#below_content {
+	margin-top: 20px;
+}
+
+
+/**********  Footer ********/
+
+.whole_footer_area .footer_area .footer_center {
+	width: 100%;
+}
+
+body.footer_left .whole_footer_area .footer_area .footer_left {
+	width: 33.3333%;
+	float: left;
+}
+
+body.footer_left .whole_footer_area .footer_area .footer_center {
+	width: 66.3333%;
+	float: right;
+}
+
+body.footer_right .whole_footer_area .footer_area .footer_right {
+	width: 33.3333%;
+	float: right;
+}
+
+body.footer_right .whole_footer_area .footer_area .footer_center {
+	width: 66.3333%;
+	float: left;
+}
+
+body.both_footer .whole_footer_area .footer_area .footer_left {
+	width: 50%;
+	float: left;
+}
+
+body.both_footer .whole_footer_area .footer_area .footer_right {
+	width: 50%;
+	float: right;
+}
+
+body.footer_center .whole_footer_area .footer_area .footer_left {
+	width: 33.3333%;
+	float: left;
+}
+
+body.footer_center .whole_footer_area .footer_area .footer_center {
+	width: 33.3333%;
+}
+
+body.footer_center .whole_footer_area .footer_area .footer_right {
+	width: 33.3333%;
+	float: right;
+}
+

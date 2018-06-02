@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Nubay CTA Block feature.
+ */
+
+include_once 'nubay_cta_block.features.inc';

@@ -1,0 +1,12 @@
+name = Backup and Migrate Dropbox
+description = "Allows Back and Migrate to save the backup files to a dropbox.com account"
+core = 7.x
+dependencies[] = backup_migrate (>=7.x-3.0)
+php = 5.3
+
+; Information added by Drupal.org packaging script on 2016-10-17
+version = "7.x-1.0-alpha1+5-dev"
+core = "7.x"
+project = "backup_migrate_dropbox"
+datestamp = "1476700452"
+

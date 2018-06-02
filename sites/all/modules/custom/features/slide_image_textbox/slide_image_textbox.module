@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the slide_image_textbox feature.
+ */
+
+include_once 'slide_image_textbox.features.inc';

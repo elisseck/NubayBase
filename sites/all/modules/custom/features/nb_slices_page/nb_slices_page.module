@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the NB Slices Page feature.
+ */
+
+include_once 'nb_slices_page.features.inc';

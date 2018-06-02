@@ -1,0 +1,213 @@
+/**
+ * Nubay Theme nubay.css
+ *
+ * Use this file to add your custom styles.
+ *
+ * You can change the name of this file, just
+ * remember to update the name in the info file
+ * as well.
+ */
+
+/*Basic Styles for a Person node*/
+
+.view .node-person {
+    width:100%;
+    clear:both;
+}
+.node-person .node-title {
+    display:none!important;
+}
+
+.node-person figure {
+    float:left;
+}
+
+.node-person .group-person-fullname,
+.node-person .field-name-field-person-job-title {
+    font-weight: bold;
+    font-size: 1.25em;
+    margin-bottom:0;
+}
+/*column 1 holds image*/
+.group-col1 {
+    width:25%;
+    max-width:220px;
+    padding-top:10px;
+    float:left;
+}
+/*column 2 holds name, title, bio*/
+.group-col2 {
+    width:74%;
+    float:left;
+    margin-left:1%;
+}
+
+
+/* Slices */
+
+/* Add manual clearfix styling */
+.entity-paragraphs-item:before,
+.entity-paragraphs-item:after {
+    content: " "; /* 1 */
+    display: table; /* 2 */
+}
+.entity-paragraphs-item:after {
+    clear:both;
+}
+
+/* Subtitles */
+.field-name-field-s-subtitle {
+    font-style: italic;
+}
+
+/* Images */
+.field-name-field-s-image figure,
+.field-name-field-s-image img {
+    width:100%;
+    max-width:100%;
+}
+
+/* Text + image to left or right */
+.paragraphs-item-slice-combo-text-img_LR {
+    width:100%;
+    clear:both;
+}
+.paragraphs-item-slice-combo-text-img_LR .field-name-field-s-image {
+    margin-bottom:.5em;
+}
+
+
+
+@media (min-width: 650px) {
+    .paragraphs-item-slice-combo-text-img_LR .field-name-field-s-image {
+        max-width:30%;
+    }
+    .img-L .field-name-field-s-image {
+        float: left;
+        margin-right:2%;
+    }
+    .img-R .field-name-field-s-image {
+        float: right;
+        margin-left:2%;
+    }
+}
+
+
+/* Multi Columns */
+@media (min-width: 650px) {
+    .paragraphs-items-field-add-slice-cols .entity-paragraphs-item {
+        float: left;
+        width: 100%;
+        margin-right: 2%;
+    }
+    .col-2 .entity-paragraphs-item {
+        width: 49%;
+    }
+    .col-3 .entity-paragraphs-item {
+        width: 32%;
+    }
+    .col-4 .entity-paragraphs-item {
+        width: 23.5%;
+    }
+    .col-2 .entity-paragraphs-item:last-child,
+    .col-3 .entity-paragraphs-item:last-child,
+    .col-4 .entity-paragraphs-item:last-child {
+        margin-right: 0;
+    }
+}
+
+/*Basic Styles for Nubay Header*/
+#branding{
+  padding-top:20px;
+  padding-bottom:15px;
+}
+/*column 1 holds logo image*/
+#header-wrapper .header-col1 {
+    width:15%;
+    display:inline-block;
+    vertical-align:bottom;
+}
+/*column 2 holds menu, search and social icons*/
+#header-wrapper .header-col2 {
+    width:70%;
+    display:inline-block;
+    vertical-align:bottom;
+    text-align:right;
+}
+#header-wrapper .header-col-2,
+#header-wrapper .header-col-3,
+#header-wrapper .header-col-4 {
+    display: inline-block;
+    vertical-align: bottom;
+}
+#header-wrapper .block {
+    margin-bottom: 0px;
+}
+
+/***
+  ** Mobile Header Style
+  **/
+  
+@media only screen and (min-width:0px) and (max-width:767px) {
+
+#toolbar,
+#toolbar div.toolbar-menu {
+	display: none;
+}
+
+#header-wrapper {
+	width: 90%;
+	padding: 0px 5%;
+}
+
+#header-wrapper header {
+	display: block;
+	clear: none;
+}
+
+#branding {
+	width: 100%;
+	display: block;
+	padding: 0px;
+	margin: auto;
+}
+
+#branding .header-col1 figure {
+	max-width: 150px;
+	margin: auto;
+	clear: none !important;
+	float: none;
+}
+
+#header-wrapper .header-col1 {
+	width: 100%;
+	padding: 20px 0px 15px;
+	display: block;
+	text-align:center;
+}
+
+#header-wrapper .header-col2 {
+	width: 100%;
+	display: block;
+	position: relative;
+}
+
+#header-wrapper .header-col2 .block-inner {
+	margin-left: 0px;
+	margin-right: 0px;
+}
+
+#header-wrapper .header-col-2 {
+	position: absolute;
+	left: 0px;
+	width: 100%;
+	z-index: 1;
+}
+
+#header-wrapper .header-col-3,
+#header-wrapper .header-col-4 {
+	position: relative;
+	z-index: 11;
+}
+  
+}

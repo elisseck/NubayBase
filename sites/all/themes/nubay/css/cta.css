@@ -1,0 +1,16 @@
+/**
+  * CTA Block Design
+  */
+.block-nodeblock{
+  margin-top:15px;
+}
+.cta_block_parent{
+  display:inline-block;
+}
+.cta_block{
+  width:250px;
+  height:115px;
+  /*padding:15px;*/
+  text-align:center;
+  display:inline-block;
+}

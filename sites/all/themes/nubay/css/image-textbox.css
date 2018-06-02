@@ -1,0 +1,115 @@
+#slideshow {
+position: relative;
+}
+#slideshow .slide_title {
+    font-size: 32px;
+}
+#slideshow .slideshow_text {
+    display:block;
+    position: absolute;
+    left: 0;
+    top:0px;
+    width:200px;
+}
+#slideshow .position {
+    width:auto;
+    height:auto;
+    padding:20px 25px 20px 25px;
+}
+#slideshow #position_Fixed-left .position,
+#slideshow #position_Fixed-Right .position{
+  padding-top:40px;
+}
+#slideshow #position_Float-Left,
+#slideshow #position_ {
+    padding-bottom:27px;
+    height:auto;
+    left:45px;
+    top:50px;
+    right: auto;
+}
+#slideshow #position_Float-Right {
+    padding-bottom:27px;
+    height:auto;
+    right: 45px;
+    left: auto;
+    top:50px;
+}
+#slideshow #position_Fixed-left {
+    height:100%;
+    margin-left:0px;
+    top:0px;
+    padding-left:10px;
+}
+#slideshow #position_Fixed-Right {
+    height:100%;
+    top:0px;
+    left: auto;
+    right: 0px;
+    padding-left:10px;
+}
+
+#slideshow #position_Center {
+    height:auto;
+    top:50px;
+    margin: auto;
+    left: 0px;
+    right: 0px;
+}
+#slideshow .link_text .field-name-field-link-text h2.field-label{
+  display:none;
+}
+#slideshow .link_text{
+  margin-top:10px;
+}
+#slideshow .link_text a{
+  color:#fff;
+  padding: 2px 6px;
+  border:1px solid #fff;
+  font-weight:bold;
+}
+#slideshow .link_text a:hover{
+  text-decoration:underline;
+}
+#slideshow .edit_link a {
+  background: #003399 none repeat scroll 0 0;
+  color: #fff;
+  padding: 5px 15px;
+  position: absolute;
+}
+.mobile_image_text_box_caption{
+  display:none;
+}
+@media only screen and (min-width:0px) and (max-width:767px) {
+  #slideshow .slideshow_text,
+  .flexslider ul.flex-direction-nav li,
+  .flexslider ol.flex-control-nav{
+    display:none;
+  }
+  .mobile_image_text_box_caption{
+    display:block;
+  }
+}
+@media only screen and (min-width:768px) and (max-width:1174px){
+  #slideshow #position_Float-Left,
+  #slideshow #position_Float-Right,
+  #slideshow #position_Center{
+    top:20px;
+  }
+  #slideshow #position_Fixed-left .position,
+  #slideshow #position_Fixed-Right .position,
+  #slideshow #position_ .position{
+    padding-top:20px;
+  }
+  #slideshow #position_Float-Left,
+  #slideshow #position_,
+  #slideshow #position_Float-Right {
+    padding-bottom:0px;
+  }
+  #slideshow .slide_title {
+    font-size: 24px;
+  }
+  #slideshow .slide_text {
+    font-size: 16px;
+  }
+}
