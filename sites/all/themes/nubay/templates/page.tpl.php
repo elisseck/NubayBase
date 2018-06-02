@@ -1,3 +1,5 @@
+<div id="page-wrapper">
+    <div id="page" class="<?php print $classes; ?>">
 <?php if ($page['header_top']): ?>
 	<div class="whole_header_top">
 		<div class="header_top container"><?php print render($page['header_top']); ?></div>
@@ -34,16 +36,6 @@
 		<div class="banner_area container"><?php print render($page['banner_area']); ?></div>
 	</div>
 <?php endif; ?>
-    
-    <?php if ($messages || $page['help']): ?>
-      <div id="messages-help-wrapper">
-        <div class="container clearfix">
-          <?php print $messages; ?>
-          <?php print render($page['help']); ?>
-        </div>
-      </div>
-    <?php endif; ?>
-
 
 <div id="content-wrapper">
   <div class="container">
@@ -55,7 +47,14 @@
           <div class="content-inner">
 
             <<?php print $tag; ?> id="main-content" role="main">
-             
+            <?php if ($messages || $page['help']): ?>
+                <div id="messages-help-wrapper">
+                    <div class="container clearfix">
+                      <?php print $messages; ?>
+                      <?php print render($page['help']); ?>
+                    </div>
+                </div>
+            <?php endif; ?>
               <?php if ($page['above_content']): ?>
                   <div id="above_content" class="content-margin">
                     <?php print render($page['above_content']); ?>
@@ -133,7 +132,7 @@
     </div>
 
   </div>
-</div>
+
     
    
 <?php if ($page['footer_top']): ?>
