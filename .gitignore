@@ -1,0 +1,21 @@
+# Ignore sites/* with the exception of sites/all
+sites/*
+!sites/all
+!sites/*.php
+!sites/*.txt
+sites/sites.php
+
+# Ignore temp/cache files
+vendor/civicrm_ext/cache
+
+# Ignore 3rd party software if present
+phpMyAdmin*
+Search-Replace-DB*
+
+# Misc files
+*~
+*.orig
+/*.csv
+/*.json
+/*.make
+/*.tar
