@@ -12,6 +12,7 @@ function nubay_form_system_theme_settings_alter(&$form, &$form_state) {
   if (($enable_extensions && $form_state['values']['enable_extensions'] == 1) || (!$enable_extensions && $form['at-settings']['extend']['enable_extensions']['#default_value'] == 1)) {
     nubay_color_styles_form($form, $form_state);
     nubay_inline_block_form($form, $form_state);
+    nubay_block_margins_form($form, $form_state);
   }
 }
 
@@ -479,7 +480,7 @@ function nubay_inline_block_form(&$form, &$form_state) {
  * @param $form_state
  */
 function nubay_inline_block_theme_settings_submit($form, $form_state) {
-// Set form_state values into one variable
+  // Set form_state values into one variable
   $values = $form_state['values'];
 
   // Get the active theme name, $theme_key will return the admin theme
@@ -554,6 +555,7 @@ function nubay_inline_block_theme_settings_submit($form, $form_state) {
 function nubay_inline_block_generate_style_data($values, $region_name, &$styles_data) {
   if (!empty($values['inline_block_' . $region_name])) {
     // set display property to inline block for the region
+    $styles_data[] = '.' . $region_name . ' {box-sizing:border-box;}';
     $styles_data[] = '.' . $region_name . ' .block {display:inline-block;}';
     // set vertical alignment
     if (!empty($values['inline_block_' . $region_name . '_vertical_align'])) {
@@ -581,6 +583,167 @@ function nubay_inline_block_generate_style_data($values, $region_name, &$styles_
     // mobile portrait
     if (!empty($values['inline_block_' . $region_name . '_stack_mobile_portrait'])) {
       $styles_data[] = '@media ' . $values['smalltouch_portrait_media_query'] . ' {' . '.' . $region_name . ' .block {display:block;width:100% !important;}}';
+    }
+  }
+}
+
+/**
+ * Function to add Drupal FAPI code for Block Margins extension
+ *
+ * @param $form
+ * @param $form_state
+ */
+function nubay_block_margins_form(&$form, &$form_state) {
+  // Get the active theme name, we need it at some stage.
+  $theme_name = $form_state['build_info']['args'][0];
+
+  // Get the active themes info array
+  $info_array = at_get_info($theme_name);
+
+  $regions = ['global' => 'Global'];
+  // Prepare regions
+  foreach ($info_array['regions'] as $key => $value) {
+    if (isset($key)) {
+      $regions[$key] = $value;
+    }
+  }
+
+  $sides = ['left', 'right', 'top', 'bottom'];
+
+  $form['at']['nubay_block_margins'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Block Margin and Padding'),
+    '#description' => t('<h3>Block Margin and Padding</h3><p>Setting default block margin and padding styles for regions with the theme via the AT infrastructure</p>'),
+  );
+
+  // Build form elements for each region
+  if (!empty($regions)) {
+    foreach ($regions as $region_name => $region_label) {
+
+      $title = check_plain($region_label);
+      $region_name = check_plain($region_name);
+
+      $form['at']['nubay_block_margins']['region-options-' . $region_name] = [
+        '#type'  => 'fieldset',
+        '#title' => t("Options for the $title region"),
+      ];
+      $form['at']['nubay_block_margins']['region-options-' . $region_name]['block_margin_' . $region_name] = [
+        '#type'          => 'checkbox',
+        '#title'         => t($title),
+        '#return'        => 1,
+        '#default_value' => at_get_setting('block_margin_' . $region_name),
+      ];
+      $form['at']['nubay_block_margins']['region-options-' . $region_name]['block_margin_padding_' . $region_name] = [
+        '#type'   => 'fieldset',
+        '#title'  => t('Block Margin and Padding'),
+        '#states' => ['invisible' => ['input[name=block_margin_' . $region_name . ']' => ['checked' => FALSE]]],
+      ];
+      // margin
+      foreach ($sides as $side) {
+        $form['at']['nubay_block_margins']['region-options-' . $region_name]['block_margin_padding_' . $region_name]['block_margin_margin_' . $side . '_' .$region_name] = [
+          '#type'          => 'textfield',
+          '#title'         => 'Margin ' . $side,
+          '#description'   => 'Enter a value with the unit, e.g 1% or 10px',
+          '#default_value' => at_get_setting('block_margin_margin_' . $side . '_' .$region_name),
+          '#size' => 60,
+        ];
+      }
+      // padding
+      foreach ($sides as $side) {
+        $form['at']['nubay_block_margins']['region-options-' . $region_name]['block_margin_padding_' . $region_name]['block_margin_padding_' . $side . '_' .$region_name] = [
+          '#type'          => 'textfield',
+          '#title'         => 'Padding ' . $side,
+          '#description'   => 'Enter a value with the unit, e.g 1% or 10px',
+          '#default_value' => at_get_setting('block_margin_padding_' . $side . '_' .$region_name),
+          '#size' => 60,
+        ];
+      }
+    }
+  }
+
+  $form['#submit'][] = 'nubay_block_margins_theme_settings_submit';
+}
+
+/**
+ * Submit handler for the Block Margins extension settings form, generate css for blocks in regions based on settings chosen
+ *
+ * @param $form
+ * @param $form_state
+ */
+function nubay_block_margins_theme_settings_submit($form, $form_state) {
+  // Set form_state values into one variable
+  $values = $form_state['values'];
+
+  // Get the active theme name, $theme_key will return the admin theme
+  $theme_name = $form_state['build_info']['args'][0];
+
+  // Set the path variable to the right path
+  if ($values['global_files_path'] === 'public_files') {
+    $path = 'public://adaptivetheme/' . $theme_name . '_files';
+  }
+  elseif ($values['global_files_path'] === 'theme_directory') {
+    $path = drupal_get_path('theme', $theme_name) . '/generated_files';
+  }
+  elseif ($values['global_files_path'] === 'custom_path') {
+    $path = $values['custom_files_path'];
+  }
+
+  // Get the active themes info array
+  $info_array = at_get_info($theme_name);
+
+  // Prepare regions
+  $regions = ['global' => 'Global'];
+  foreach ($info_array['regions'] as $key => $value) {
+    if (isset($key)) {
+      $regions[$key] = $value;
+    }
+  }
+
+  // $styles_data holds all data for the stylesheet
+  $styles_data = [];
+
+  // Build form elements for each region
+  if (!empty($regions)) {
+    foreach ($regions as $region_name => $region_label) {
+      nubay_block_margins_generate_style_data($values, $region_name, $styles_data);
+    }
+  }
+
+  if (!empty($styles_data)) {
+    $styles = implode("\n", $styles_data);
+    $styles = preg_replace('/^[ \t]*[\r\n]+/m', '', $styles);
+    $file_name = $theme_name . '.blockmargins-styles.css';
+    $filepath = "$path/$file_name";
+    file_unmanaged_save_data($styles, $filepath, FILE_EXISTS_REPLACE);
+  }
+  else {
+    $styles = '';
+    $file_name = $theme_name . '.blockmargins-styles.css';
+    $filepath = "$path/$file_name";
+    file_unmanaged_save_data($styles, $filepath, FILE_EXISTS_REPLACE);
+  }
+}
+
+/**
+ * Utility function to generate style_data for the Block Margins extension
+ *
+ * @param $values
+ * @param $region_name
+ * @param $styles_data
+ */
+function nubay_block_margins_generate_style_data($values, $region_name, &$styles_data) {
+  if (!empty($values['block_margin_' . $region_name])) {
+    $types = ['margin', 'padding'];
+    $sides = ['left', 'right', 'top', 'bottom'];
+    foreach ($types as $type) {
+      foreach ($sides as $side) {
+        if (!empty($values['block_margin_' . $type . '_' . $side . '_' . $region_name])) {
+          $styles_data[] = ($region_name != 'global' ? ('.' . $region_name . ' ') : '') . '.block {' . $type . '-' . $side . ':' . $values['block_margin_' . $type . '_' . $side . '_' . $region_name] .';}';
+        }
+        else {
+          $styles_data[] = ($region_name != 'global' ? ('.' . $region_name . ' ') : '') . '.block {' . $type . '-' . $side . ':0;}';
+        }
+      }
     }
   }
 }
