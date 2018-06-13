@@ -1,0 +1,9 @@
+name = Views Bulk CiviCRM Activity
+description = Provides Views Form elements for creating activities from a View of Contacts
+core = 7.x
+
+dependencies[] = civicrm
+dependencies[] = views
+dependencies[] = date_popup
+
+files[] = views/views_bulk_civicrm_activity_field_handler_activity_create.inc
