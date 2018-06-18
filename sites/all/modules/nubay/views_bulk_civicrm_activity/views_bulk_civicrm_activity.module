@@ -1,0 +1,146 @@
+<?php
+/**
+ * @file
+ * Views Bulk CiviCRM Activity module file
+ */
+
+/**
+ * Implements hook_views_api().
+ */
+function views_bulk_civicrm_activity_views_api() {
+  return array(
+    'api' => 3,
+    'path' => drupal_get_path('module', 'views_bulk_civicrm_activity') . '/views',
+  );
+}
+
+/**
+ * Implements hook_views_form_substitutions().
+ */
+function views_bulk_civicrm_activity_views_form_substitutions() {
+  // Views check_plains the column label, so VBO needs to do the same
+  // in order for the replace operation to succeed.
+  $select_all_placeholder = check_plain('<!--views-bulk-civicrm-activity-select-all-->');
+  $select_all = array(
+    '#type' => 'checkbox',
+    '#title' => 'Bulk CiviCRM Activity Create',
+    '#default_value' => FALSE,
+    '#attributes' => array('class' => array('views-bulk-civicrm-activity-select-all')),
+  );
+
+  return array(
+    $select_all_placeholder => drupal_render($select_all),
+  );
+}
+
+/**
+ * Utility function to get the option values for a custom field
+ *
+ * @param $custom_field_id
+ *
+ * @return array
+ */
+function _views_bulk_civicrm_activity_get_custom_field_value_options($custom_field_id) {
+  if (!civicrm_initialize()) {
+    return [];
+  }
+  $options = [];
+  try {
+    if (!empty($custom_field_id)) {
+      $result = civicrm_api3('Activity', 'getoptions', [
+        'sequential' => 1,
+        'field'      => $custom_field_id,
+      ]);
+      if (!empty($result['count'])) {
+        foreach ($result['values'] as $index => $value_data) {
+          $options[$value_data['key']] = $value_data['value'];
+
+        }
+      }
+    }
+  }
+  catch (Exception $e) {
+  }
+  return $options;
+}
+
+/**
+ * Utility function to get options for Activity Types
+ *
+ * @return array
+ */
+function _views_bulk_civicrm_activity_get_activity_type_options() {
+  $options = ['' => '- Select -'];
+  if (civicrm_initialize()) {
+    try {
+      $result = civicrm_api3('OptionValue', 'get', [
+        'sequential' => 1,
+        'option_group_id' => "activity_type",
+        'options' => ['limit' => 0],
+      ]);
+      if (!empty($result['count'])) {
+        foreach ($result['values'] as $index => $value_data) {
+          $options[$value_data['value']] = $value_data['label'];
+        }
+      }
+    }
+    catch (Exception $e) {
+    }
+  }
+
+  return $options;
+}
+
+/**
+ * Utility function to get contact_id of a user
+ *
+ * @param $account
+ * @return int
+ */
+function _views_bulk_civicrm_activity_get_user_cid($account = []) {
+  if (empty($account)) {
+    global $user;
+    $account = $user;
+  }
+  if (civicrm_initialize() && !empty($account->uid)) {
+    try {
+      $result = civicrm_api3('UFMatch', 'get', array(
+        'sequential' => 1,
+        'uf_id' => $account->uid,
+      ));
+      if (!empty($result['count'])) {
+        return $result['values'][0]['contact_id'];
+      }
+    }
+    catch (Exception $e) {
+    }
+  }
+  return 0;
+}
+
+/**
+ * Implements hook_form_alter().
+ *
+ * Add a submit handler to the Views field "apply" button to clear the cache for the view
+ *
+ * alternatively do it when the view is saved....
+ *
+ * @param $form
+ * @param $form_state
+ * @param $form_id
+ */
+function views_bulk_civicrm_activity_form_alter(&$form, &$form_state, $form_id) {
+  if ($form_id == 'views_ui_edit_form') {
+    foreach ($form_state['view']->display as $display_name => $display_data) {
+      if (!empty($display_data->display_options['activity_create_form_element'])) {
+        $form['actions']['save']['#submit'][] = 'views_bulk_civicrm_activity_view_ui_save_submit_callback';
+        break;
+      }
+    }
+  }
+}
+
+function views_bulk_civicrm_activity_view_ui_save_submit_callback(&$form, &$form_state) {
+  cache_clear_all('ctools_export:views_view:' . $form_state['view']->name, 'cache_views', TRUE);
+  cache_clear_all($form_state['view']->name, 'cache_views_data', TRUE);
+}
