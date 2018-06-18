@@ -44,25 +44,25 @@ function nubay_color_styles_form(&$form, &$form_state) {
     '.sf-menu.sf-style-none li a:hover' => 'Superfish menu item hover',
   );
   // primary color
-  $form['at']['nubaystyles_primary_color'] = array(
+  $form['at']['nubaystyles_color'] = array(
     '#type' => 'fieldset',
-    '#title' => t('Primary Color'),
-    '#description' => t('<h3>Primary Colors</h3><p>Setting styles for the theme via the AT infrastructure</p>'),
+    '#title' => t('Primary/Secondary Colors'),
+    '#description' => t('<h3>Colors</h3><p>Setting styles for the theme via the AT infrastructure</p>'),
   );
-  $form['at']['nubaystyles_primary_color']['primary_color'] = array(
+  $form['at']['nubaystyles_color']['primary_color'] = array(
     '#type' => 'fieldset',
     '#title' => t('Primary Color'),
     '#description' => t('<h3>Primary Color</h3><p>Set the primary color for the site, and choose what elements it applies for.</p>'),
   );
 
-  $form['at']['nubaystyles_primary_color']['primary_color']['nubay_primary_color_enable'] = array(
+  $form['at']['nubaystyles_color']['primary_color']['nubay_primary_color_enable'] = array(
     '#type' => 'checkbox',
     '#title' => t('<strong>Enable Primary Color</strong>'),
     '#return' => 1,
     '#default_value' => theme_get_setting('nubay_primary_color_enable'),
   );
 
-  $form['at']['nubaystyles_primary_color']['primary_color']['nubay_primary_color'] = array(
+  $form['at']['nubaystyles_color']['primary_color']['nubay_primary_color'] = array(
     '#type' => 'textfield',
     '#title' => t('<strong>Primary Color</strong>'),
     '#default_value' => theme_get_setting('nubay_primary_color'),
@@ -82,10 +82,10 @@ function nubay_color_styles_form(&$form, &$form_state) {
         showButtons: false
       });';
     drupal_add_js($spectrum_js, array('type' => 'inline', 'scope' => 'footer'));
-    $form['at']['nubaystyles_primary_color']['primary_color']['nubay_primary_color']['#attributes'] = array('class' => array('spectrum-color-picker'));
+    $form['at']['nubaystyles_color']['primary_color']['nubay_primary_color']['#attributes'] = array('class' => array('spectrum-color-picker'));
   }
 
-  $form['at']['nubaystyles_primary_color']['primary_color']['nubay_primary_color_elements_foreground'] = array(
+  $form['at']['nubaystyles_color']['primary_color']['nubay_primary_color_elements_foreground'] = array(
     '#type' => 'select',
     '#title' => t('Primary Color Elements - Foreground'),
     '#description' => t('Choose which elements should receive the primary color.'),
@@ -94,7 +94,7 @@ function nubay_color_styles_form(&$form, &$form_state) {
     '#options' => $foreground_elements,
   );
 
-  $form['at']['nubaystyles_primary_color']['primary_color']['nubay_primary_color_elements_background'] = array(
+  $form['at']['nubaystyles_color']['primary_color']['nubay_primary_color_elements_background'] = array(
     '#type' => 'select',
     '#title' => t('Primary Color Elements - Background'),
     '#description' => t('Choose which elements should receive the primary color as a background.'),
@@ -103,21 +103,21 @@ function nubay_color_styles_form(&$form, &$form_state) {
     '#options' => $background_elements,
   );
 
-  $form['at']['nubaystyles_primary_color']['primary_color']['nubay_primary_color_additional_foreground'] = array(
+  $form['at']['nubaystyles_color']['primary_color']['nubay_primary_color_additional_foreground'] = array(
     '#type' => 'textfield',
     '#title' => t('Additional Selectors - Foreground'),
     '#description' => t('Enter a comma separated list of css selectors that should receive the primary color for the text color. Do not include a comma at the end.'),
     '#default_value' => theme_get_setting('nubay_primary_color_additional_foreground'),
   );
 
-  $form['at']['nubaystyles_primary_color']['primary_color']['nubay_primary_color_additional_background'] = array(
+  $form['at']['nubaystyles_color']['primary_color']['nubay_primary_color_additional_background'] = array(
     '#type' => 'textfield',
     '#title' => t('Additional Selectors - Background'),
     '#description' => t('Enter a comma separated list of css selectors that should receive the primary color for the background color. Do not include a comma at the end.'),
     '#default_value' => theme_get_setting('nubay_primary_color_additional_background'),
   );
 
-  $form['at']['nubaystyles_primary_color']['primary_color']['nubay_primary_color_use_important'] = array(
+  $form['at']['nubaystyles_color']['primary_color']['nubay_primary_color_use_important'] = array(
     '#type' => 'checkbox',
     '#return' => 1,
     '#title' => 'Use !important',
@@ -125,25 +125,20 @@ function nubay_color_styles_form(&$form, &$form_state) {
     '#default_value' => theme_get_setting('nubay_primary_color_use_important'),
   );
   // secondary color
-  $form['at']['nubaystyles_secondary_color'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('Secondary Color'),
-    '#description' => t('<h3>Secondary Colors</h3><p>Setting styles for the theme via the AT infrastructure</p>'),
-  );
-  $form['at']['nubaystyles_secondary_color']['secondary_color'] = array(
+  $form['at']['nubaystyles_color']['secondary_color'] = array(
     '#type' => 'fieldset',
     '#title' => t('Secondary Color'),
     '#description' => t('<h3>Secondary Color</h3><p>Set the secondary color for the site, and choose what elements it applies for.</p>'),
   );
 
-  $form['at']['nubaystyles_secondary_color']['secondary_color']['nubay_secondary_color_enable'] = array(
+  $form['at']['nubaystyles_color']['secondary_color']['nubay_secondary_color_enable'] = array(
     '#type' => 'checkbox',
     '#title' => t('<strong>Enable Secondary Color</strong>'),
     '#return' => 1,
     '#default_value' => theme_get_setting('nubay_secondary_color_enable'),
   );
 
-  $form['at']['nubaystyles_secondary_color']['secondary_color']['nubay_secondary_color'] = array(
+  $form['at']['nubaystyles_color']['secondary_color']['nubay_secondary_color'] = array(
     '#type' => 'textfield',
     '#title' => t('<strong>Secondary Color</strong>'),
     '#default_value' => theme_get_setting('nubay_secondary_color'),
@@ -163,10 +158,10 @@ function nubay_color_styles_form(&$form, &$form_state) {
         showButtons: false
       });';
     drupal_add_js($spectrum_js, array('type' => 'inline', 'scope' => 'footer'));
-    $form['at']['nubaystyles_secondary_color']['secondary_color']['nubay_secondary_color']['#attributes'] = array('class' => array('spectrum-color-picker'));
+    $form['at']['nubaystyles_color']['secondary_color']['nubay_secondary_color']['#attributes'] = array('class' => array('spectrum-color-picker'));
   }
 
-  $form['at']['nubaystyles_secondary_color']['secondary_color']['nubay_secondary_color_elements_foreground'] = array(
+  $form['at']['nubaystyles_color']['secondary_color']['nubay_secondary_color_elements_foreground'] = array(
     '#type' => 'select',
     '#title' => t('Secondary Color Elements - Foreground'),
     '#description' => t('Choose which elements should receive the secondary color.'),
@@ -175,7 +170,7 @@ function nubay_color_styles_form(&$form, &$form_state) {
     '#options' => $foreground_elements,
   );
 
-  $form['at']['nubaystyles_secondary_color']['secondary_color']['nubay_secondary_color_elements_background'] = array(
+  $form['at']['nubaystyles_color']['secondary_color']['nubay_secondary_color_elements_background'] = array(
     '#type' => 'select',
     '#title' => t('Secondary Color Elements - Background'),
     '#description' => t('Choose which elements should receive the secondary color as a background.'),
@@ -184,21 +179,21 @@ function nubay_color_styles_form(&$form, &$form_state) {
     '#options' => $background_elements,
   );
 
-  $form['at']['nubaystyles_secondary_color']['secondary_color']['nubay_secondary_color_additional_foreground'] = array(
+  $form['at']['nubaystyles_color']['secondary_color']['nubay_secondary_color_additional_foreground'] = array(
     '#type' => 'textfield',
     '#title' => t('Additional Selectors - Foreground'),
     '#description' => t('Enter a comma separated list of css selectors that should receive the secondary color for the text color. Do not include a comma at the end.'),
     '#default_value' => theme_get_setting('nubay_secondary_color_additional_foreground'),
   );
 
-  $form['at']['nubaystyles_secondary_color']['secondary_color']['nubay_secondary_color_additional_background'] = array(
+  $form['at']['nubaystyles_color']['secondary_color']['nubay_secondary_color_additional_background'] = array(
     '#type' => 'textfield',
     '#title' => t('Additional Selectors - Background'),
     '#description' => t('Enter a comma separated list of css selectors that should receive the secondary color for the background color. Do not include a comma at the end.'),
     '#default_value' => theme_get_setting('nubay_secondary_color_additional_background'),
   );
 
-  $form['at']['nubaystyles_secondary_color']['secondary_color']['nubay_secondary_color_use_important'] = array(
+  $form['at']['nubaystyles_color']['secondary_color']['nubay_secondary_color_use_important'] = array(
     '#type' => 'checkbox',
     '#return' => 1,
     '#title' => 'Use !important',
