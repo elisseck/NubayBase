@@ -13,6 +13,7 @@ function nubay_form_system_theme_settings_alter(&$form, &$form_state) {
     nubay_color_styles_form($form, $form_state);
     nubay_inline_block_form($form, $form_state);
     nubay_block_margins_form($form, $form_state);
+    nubay_menu_footer_regions_form($form, $form_state);
   }
 }
 
@@ -738,6 +739,297 @@ function nubay_block_margins_generate_style_data($values, $region_name, &$styles
         else {
           $styles_data[] = ($region_name != 'global' ? ('.' . $region_name . ' ') : '') . '.block {' . $type . '-' . $side . ':0;}';
         }
+      }
+    }
+  }
+}
+
+/**
+ * Function to add Drupal FAPI code for Menu/Footer Inline Regions extension
+ *
+ * @param $form
+ * @param $form_state
+ */
+function nubay_menu_footer_regions_form(&$form, &$form_state) {
+  // Get the active theme name, we need it at some stage.
+  $theme_name = $form_state['build_info']['args'][0];
+  // Get the active themes info array
+  $info_array = at_get_info($theme_name);
+
+  $menu_regions = [
+    'menu_left' => 'Menu Left',
+    'menu_center' => 'Menu Center',
+    'menu_right' => 'Menu Right',
+  ];
+  $footer_regions = [
+    'footer_left' => 'Footer Left',
+    'footer_center' => 'Footer Center',
+    'footer_right' => 'Footer Right',
+  ];
+  $vertical_align_options = [
+    '' => 'None',
+    'baseline' => 'Baseline',
+    'sub' => 'Sub',
+    'super' => 'Super',
+    'top' => 'Top',
+    'text-top' => 'Text top',
+    'middle' => 'Middle',
+    'bottom' => 'Bottom',
+    'text-bottom' => 'Text Bottom'
+  ];
+
+  $form['at']['nubay_menu_footer_inline_regions'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Menu/Footer Inline Regions'),
+    '#description' => t('<h3>Menu/Footer Inline Regions</h3><p>Setting inline styles for regions with the theme via the AT infrastructure</p>'),
+  );
+
+  // menu regions
+  $form['at']['nubay_menu_footer_inline_regions']['region_menu_inline'] = [
+    '#type'  => 'fieldset',
+    '#title' => t("Options for the menu regions"),
+  ];
+  $form['at']['nubay_menu_footer_inline_regions']['region_menu_inline']['nubay_region_menu_inline_enable'] = [
+    '#type'          => 'checkbox',
+    '#title'         => t('Menu left/center/right Inline'),
+    '#return'        => 1,
+    '#default_value' => at_get_setting('nubay_region_menu_inline_enable'),
+  ];
+  $form['at']['nubay_menu_footer_inline_regions']['region_menu_inline']['region_menu_inline_settings'] = [
+    '#type'   => 'fieldset',
+    '#title'  => t('Region Widths'),
+    '#states' => ['invisible' => ['input[name=nubay_region_menu_inline_enable]' => ['checked' => FALSE]]],
+  ];
+
+  $form['at']['nubay_menu_footer_inline_regions']['region_menu_inline']['region_menu_inline_settings']['nubay_region_menu_inline_vertical_align'] = [
+    '#type'          => 'select',
+    '#title'         => 'Vertical Alignment',
+    '#default_value' => at_get_setting('nubay_region_menu_inline_vertical_align'),
+    '#options' => $vertical_align_options,
+  ];
+
+  foreach ($menu_regions as $region_name => $region_label) {
+    $form['at']['nubay_menu_footer_inline_regions']['region_menu_inline']['region_menu_inline_settings']['nubay_region_menu_inline_' . $region_name . '_width'] = [
+      '#type'          => 'textfield',
+      '#title'         => 'Region ' . $region_label . ' Width',
+      '#description'   => 'Enter a width with the unit, e.g 33% or 250px',
+      '#default_value' => at_get_setting('nubay_region_menu_inline_' . $region_name . '_width'),
+    ];
+  }
+
+  $form['at']['nubay_menu_footer_inline_regions']['region_menu_inline']['region_menu_inline_settings']['nubay_region_menu_inline_stack_tablet_landscape'] = [
+    '#type'          => 'checkbox',
+    '#title'         => 'Stack menu regions in tablet landscape viewport',
+    '#default_value' => at_get_setting('nubay_region_menu_inline_stack_tablet_landscape'),
+  ];
+
+  $form['at']['nubay_menu_footer_inline_regions']['region_menu_inline']['region_menu_inline_settings']['nubay_region_menu_inline_stack_tablet_portrait'] = [
+    '#type'          => 'checkbox',
+    '#title'         => 'Stack menu regions in tablet portrait viewports',
+    '#default_value' => at_get_setting('nubay_region_menu_inline_stack_tablet_portrait'),
+  ];
+  $form['at']['nubay_menu_footer_inline_regions']['region_menu_inline']['region_menu_inline_settings']['nubay_region_menu_inline_stack_mobile_landscape'] = [
+    '#type'          => 'checkbox',
+    '#title'         => 'Stack menu regions in mobile landscape viewports',
+    '#default_value' => at_get_setting('nubay_region_menu_inline_stack_mobile_landscape'),
+  ];
+  $form['at']['nubay_menu_footer_inline_regions']['region_menu_inline']['region_menu_inline_settings']['nubay_region_menu_inline_stack_mobile_portrait'] = [
+    '#type'          => 'checkbox',
+    '#title'         => 'Stack menu regions in mobile portrait viewports',
+    '#default_value' => at_get_setting('nubay_region_menu_inline_stack_mobile_portrait'),
+  ];
+
+  // footer regions
+  $form['at']['nubay_menu_footer_inline_regions']['region_footer_inline'] = [
+    '#type'  => 'fieldset',
+    '#title' => t("Options for the menu regions"),
+  ];
+  $form['at']['nubay_menu_footer_inline_regions']['region_footer_inline']['nubay_region_footer_inline_enable'] = [
+    '#type'          => 'checkbox',
+    '#title'         => t('Footer left/center/right Inline'),
+    '#return'        => 1,
+    '#default_value' => at_get_setting('nubay_region_footer_inline_enable'),
+  ];
+  $form['at']['nubay_menu_footer_inline_regions']['region_footer_inline']['region_footer_inline_settings'] = [
+    '#type'   => 'fieldset',
+    '#title'  => t('Region Widths'),
+    '#states' => ['invisible' => ['input[name=nubay_region_footer_inline_enable]' => ['checked' => FALSE]]],
+  ];
+
+  $form['at']['nubay_menu_footer_inline_regions']['region_footer_inline']['region_footer_inline_settings']['nubay_region_footer_inline_vertical_align'] = [
+    '#type'          => 'select',
+    '#title'         => 'Vertical Alignment',
+    '#default_value' => at_get_setting('nubay_region_footer_inline_vertical_align'),
+    '#options' => $vertical_align_options,
+  ];
+
+  foreach ($footer_regions as $region_name => $region_label) {
+    $form['at']['nubay_menu_footer_inline_regions']['region_footer_inline']['region_footer_inline_settings']['nubay_region_footer_inline_' . $region_name . '_width'] = [
+      '#type'          => 'textfield',
+      '#title'         => 'Region ' . $region_label . ' Width',
+      '#description'   => 'Enter a width with the unit, e.g 33% or 250px',
+      '#default_value' => at_get_setting('nubay_region_footer_inline_' . $region_name . '_width'),
+    ];
+  }
+
+  $form['at']['nubay_menu_footer_inline_regions']['region_footer_inline']['region_footer_inline_settings']['nubay_region_footer_inline_stack_tablet_landscape'] = [
+    '#type'          => 'checkbox',
+    '#title'         => 'Stack footer regions in tablet landscape viewport',
+    '#default_value' => at_get_setting('nubay_region_footer_inline_stack_tablet_landscape'),
+  ];
+
+  $form['at']['nubay_menu_footer_inline_regions']['region_footer_inline']['region_footer_inline_settings']['nubay_region_footer_inline_stack_tablet_portrait'] = [
+    '#type'          => 'checkbox',
+    '#title'         => 'Stack footer regions in tablet portrait viewports',
+    '#default_value' => at_get_setting('nubay_region_footer_inline_stack_tablet_portrait'),
+  ];
+  $form['at']['nubay_menu_footer_inline_regions']['region_footer_inline']['region_footer_inline_settings']['nubay_region_footer_inline_stack_mobile_landscape'] = [
+    '#type'          => 'checkbox',
+    '#title'         => 'Stack footer regions in mobile landscape viewports',
+    '#default_value' => at_get_setting('nubay_region_footer_inline_stack_mobile_landscape'),
+  ];
+  $form['at']['nubay_menu_footer_inline_regions']['region_footer_inline']['region_footer_inline_settings']['nubay_region_footer_inline_stack_mobile_portrait'] = [
+    '#type'          => 'checkbox',
+    '#title'         => 'Stack footer regions in mobile portrait viewports',
+    '#default_value' => at_get_setting('nubay_region_footer_inline_stack_mobile_portrait'),
+  ];
+
+
+
+  $form['#submit'][] = 'nubay_menu_footer_regions_theme_settings_submit';
+
+}
+
+/**
+ * Submit handler for the Menu/Footer Inline Regions extension settings form, generate css based on settings chosen
+ *
+ * @param $form
+ * @param $form_state
+ */
+function nubay_menu_footer_regions_theme_settings_submit($form, $form_state) {
+  // Set form_state values into one variable
+  $values = $form_state['values'];
+
+  // Get the active theme name, $theme_key will return the admin theme
+  $theme_name = $form_state['build_info']['args'][0];
+
+  // Set the path variable to the right path
+  if ($values['global_files_path'] === 'public_files') {
+    $path = 'public://adaptivetheme/' . $theme_name . '_files';
+  }
+  elseif ($values['global_files_path'] === 'theme_directory') {
+    $path = drupal_get_path('theme', $theme_name) . '/generated_files';
+  }
+  elseif ($values['global_files_path'] === 'custom_path') {
+    $path = $values['custom_files_path'];
+  }
+
+  // Get the active themes info array
+  $info_array = at_get_info($theme_name);
+
+
+  // $styles_data holds all data for the stylesheet
+  $styles_data = [];
+
+  // Build form elements for each region
+  nubay_menu_footer_regions_generate_style_data($values, $styles_data);
+
+  if (!empty($styles_data)) {
+    $styles = implode("\n", $styles_data);
+    $styles = preg_replace('/^[ \t]*[\r\n]+/m', '', $styles);
+    $file_name = $theme_name . '.inlineregions-styles.css';
+    $filepath = "$path/$file_name";
+    file_unmanaged_save_data($styles, $filepath, FILE_EXISTS_REPLACE);
+  }
+  else {
+    $styles = '';
+    $file_name = $theme_name . '.inlineregions-styles.css';
+    $filepath = "$path/$file_name";
+    file_unmanaged_save_data($styles, $filepath, FILE_EXISTS_REPLACE);
+  }
+}
+
+/**
+ * Utility function to populate styles_data array with css
+ *
+ * @param $values
+ * @param $styles_data
+ */
+function nubay_menu_footer_regions_generate_style_data($values, &$styles_data)
+{
+  $menu_regions = [
+    'menu_left'   => 'Menu Left',
+    'menu_center' => 'Menu Center',
+    'menu_right'  => 'Menu Right',
+  ];
+  $footer_regions = [
+    'footer_left'   => 'Footer Left',
+    'footer_center' => 'Footer Center',
+    'footer_right'  => 'Footer Right',
+  ];
+  // menu regions
+  if (!empty($values['nubay_region_menu_inline_enable'])) {
+    $styles_data[] = '.menu_middle {box-sizing:border-box;}';
+    foreach ($menu_regions as $region_name => $region_label) {
+      $styles_data[] = '.menu_middle .' . $region_name . ' {display:inline-block;}';
+      // set vertical alignment
+      if (!empty($values['nubay_region_menu_inline_vertical_align'])) {
+        $styles_data[] = '.menu_middle .' . $region_name . ' {vertical-align:' . $values['nubay_region_menu_inline_vertical_align'] . ';}';
+      }
+
+      if (!empty($values['nubay_region_menu_inline_' . $region_name . '_width'])) {
+          $styles_data[] = '.menu_middle .' . $region_name . ' {width:' . $values['nubay_region_menu_inline_' . $region_name . '_width'] . ';}';
+      }
+
+      // set blocks to stack for tablet/mobile
+      // tablet landscape
+      if (!empty($values['nubay_region_menu_inline_stack_tablet_landscape'])) {
+        $styles_data[] = '@media ' . $values['tablet_landscape_media_query'] . ' {.menu_middle ' . '.' . $region_name . ' {display:block;width:100% !important;}}';
+      }
+      // tablet portrait
+      if (!empty($values['nubay_region_menu_inline_stack_tablet_portrait'])) {
+        $styles_data[] = '@media ' . $values['tablet_portrait_media_query'] . ' {.menu_middle ' . '.' . $region_name . ' {display:block;width:100% !important;}}';
+      }
+      // mobile landscape
+      if (!empty($values['nubay_region_menu_inline_stack_mobile_landscape'])) {
+        $styles_data[] = '@media ' . $values['smalltouch_landscape_media_query'] . ' {.menu_middle ' . '.' . $region_name . ' {display:block;width:100% !important;}}';
+      }
+      // mobile portrait
+      if (!empty($values['nubay_region_menu_inline_stack_mobile_portrait'])) {
+        $styles_data[] = '@media ' . $values['smalltouch_portrait_media_query'] . ' {.menu_middle ' . '.' . $region_name . ' {display:block;width:100% !important;}}';
+      }
+    }
+  }
+  // footer regions
+  if (!empty($values['nubay_region_footer_inline_enable'])) {
+    $styles_data[] = '.footer_area {box-sizing:border-box;}';
+    foreach ($footer_regions as $region_name => $region_label) {
+      $styles_data[] = '.footer_area .' . $region_name . ' {display:inline-block;}';
+      // set vertical alignment
+      if (!empty($values['nubay_region_footer_inline_vertical_align'])) {
+        $styles_data[] = '.footer_area .' . $region_name . ' {vertical-align:' . $values['nubay_region_footer_inline_vertical_align'] . ';}';
+      }
+
+      if (!empty($values['nubay_region_footer_inline_' . $region_name . '_width'])) {
+        $styles_data[] = '.footer_area .' . $region_name . ' {width:' . $values['nubay_region_footer_inline_' . $region_name . '_width'] . ';}';
+      }
+
+      // set blocks to stack for tablet/mobile
+      // tablet landscape
+      if (!empty($values['nubay_region_footer_inline_stack_tablet_landscape'])) {
+        $styles_data[] = '@media ' . $values['tablet_landscape_media_query'] . ' {.footer_area ' . '.' . $region_name . ' {display:block;width:100% !important;}}';
+      }
+      // tablet portrait
+      if (!empty($values['nubay_region_footer_inline_stack_tablet_portrait'])) {
+        $styles_data[] = '@media ' . $values['tablet_portrait_media_query'] . ' {.footer_area ' . '.' . $region_name . ' {display:block;width:100% !important;}}';
+      }
+      // mobile landscape
+      if (!empty($values['nubay_region_footer_inline_stack_mobile_landscape'])) {
+        $styles_data[] = '@media ' . $values['smalltouch_landscape_media_query'] . ' {.footer_area ' . '.' . $region_name . ' {display:block;width:100% !important;}}';
+      }
+      // mobile portrait
+      if (!empty($values['nubay_region_footer_inline_stack_mobile_portrait'])) {
+        $styles_data[] = '@media ' . $values['smalltouch_portrait_media_query'] . ' {.footer_area ' . '.' . $region_name . ' {display:block;width:100% !important;}}';
       }
     }
   }

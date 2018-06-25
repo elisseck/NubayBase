@@ -1,5 +1,5 @@
 /************  Middle Menu *********/
-
+/*
 .menu_middle_area .menu_middle .menu_center {
 	width: 100%;
 }
@@ -49,14 +49,14 @@ body.menu_center .menu_middle_area .menu_middle .menu_right {
 	width: 33.3333%;
 	float: right;
 }
-
+*/
 #below_content {
 	margin-top: 20px;
 }
 
 
 /**********  Footer ********/
-
+/*
 .whole_footer_area .footer_area .footer_center {
 	width: 100%;
 }
@@ -104,4 +104,4 @@ body.footer_center .whole_footer_area .footer_area .footer_right {
 	width: 33.3333%;
 	float: right;
 }
-
+*/

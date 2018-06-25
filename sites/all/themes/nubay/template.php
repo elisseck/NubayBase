@@ -150,6 +150,21 @@ function nubay_preprocess_html(&$vars) {
     else {
       at_load_failure($filepath, $theme_name);
     }
+
+    // load menu/footer regions inline styles
+    $filepath = $path . '/' . $theme_name . '.inlineregions-styles.css';
+    if (file_exists($filepath)) {
+      drupal_add_css($filepath, array(
+          'preprocess' => TRUE,
+          'group' => CSS_THEME,
+          'media' => 'screen',
+          'every_page' => TRUE,
+        )
+      );
+    }
+    else {
+      at_load_failure($filepath, $theme_name);
+    }
   }
   
 }
