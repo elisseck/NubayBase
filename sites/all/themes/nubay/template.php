@@ -68,7 +68,7 @@ function nubay_process_block(&$vars) {
 
 function nubay_preprocess_html(&$vars) {
     
-  if (!empty($vars['page']['menu_left']) && !empty($vars['page']['menu_center'])) {
+  /*if (!empty($vars['page']['menu_left']) && !empty($vars['page']['menu_center'])) {
       $vars['classes_array'][] = 'menu_left';
   }
   
@@ -98,7 +98,7 @@ function nubay_preprocess_html(&$vars) {
   
   if (!empty($vars['page']['footer_center']) && !empty($vars['page']['footer_right'])) {
       $vars['classes_array'][] = 'footer_right';
-  }
+  }*/
 
   global $theme_key;
   $theme_name = $theme_key;
