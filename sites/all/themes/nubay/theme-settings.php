@@ -14,6 +14,7 @@ function nubay_form_system_theme_settings_alter(&$form, &$form_state) {
     nubay_inline_block_form($form, $form_state);
     nubay_block_margins_form($form, $form_state);
     nubay_menu_footer_regions_form($form, $form_state);
+    nubay_superfish_styles_form($form, $form_state);
   }
 }
 
@@ -1031,6 +1032,139 @@ function nubay_menu_footer_regions_generate_style_data($values, &$styles_data)
       if (!empty($values['nubay_region_footer_inline_stack_mobile_portrait'])) {
         $styles_data[] = '@media ' . $values['smalltouch_portrait_media_query'] . ' {.footer_area ' . '.' . $region_name . ' {display:block;width:100% !important;}}';
       }
+    }
+  }
+}
+
+/**
+ * @param $form
+ * @param $form_state
+ */
+function nubay_superfish_styles_form(&$form, &$form_state) {
+  // primary color
+  $form['at']['nubaystyles_superfish'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Superfish Menu'),
+    '#description' => t('<h3>Superfish Menu</h3><p>Setting styles for the theme via the AT infrastructure</p>'),
+  );
+  $form['at']['nubaystyles_superfish']['superfish'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Primary Color'),
+    '#description' => t('<h3>Superfish Menu</h3><p>Set styles for superfish menus.</p>'),
+  );
+  $form['at']['nubaystyles_superfish']['superfish']['nubay_superfish_enable'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('<strong>Enable Superfish menu alterations</strong>'),
+    '#return' => 1,
+    '#default_value' => theme_get_setting('nubay_superfish_enable'),
+  );
+
+  $text_align_options = [
+    'left' => 'Left',
+    'center' => 'Center',
+    'right' => 'Right',
+  ];
+
+  $form['at']['nubaystyles_superfish']['superfish']['nubay_superfish_ul_text_align'] = array(
+    '#type' => 'select',
+    '#title' => t('<strong>Text Alignment</strong>'),
+    '#options' => $text_align_options,
+    '#default_value' => theme_get_setting('nubay_superfish_ul_text_align'),
+  );
+
+  $li_float_options = [
+    'none' => 'None',
+    'left' => 'Left',
+    'right' => 'Right',
+  ];
+
+  $form['at']['nubaystyles_superfish']['superfish']['nubay_superfish_li_float'] = array(
+    '#type' => 'select',
+    '#title' => t('<strong>List Item Float</strong>'),
+    '#options' => $li_float_options,
+    '#default_value' => theme_get_setting('nubay_superfish_li_float'),
+  );
+
+  $li_display_options = [
+    '' => 'No alteration',
+    'inline-block' => 'inline-block',
+  ];
+
+  $form['at']['nubaystyles_superfish']['superfish']['nubay_superfish_li_display'] = array(
+    '#type' => 'select',
+    '#title' => t('<strong>List Item Display type</strong>'),
+    '#options' => $li_display_options,
+    '#default_value' => theme_get_setting('nubay_superfish_li_display'),
+  );
+
+  $form['#submit'][] = 'nubay_superfish_styles_theme_settings_submit';
+}
+
+/**
+ * Submit handler for the Menu/Footer Inline Regions extension settings form, generate css based on settings chosen
+ *
+ * @param $form
+ * @param $form_state
+ */
+function nubay_superfish_styles_theme_settings_submit($form, $form_state) {
+  // Set form_state values into one variable
+  $values = $form_state['values'];
+
+  // Get the active theme name, $theme_key will return the admin theme
+  $theme_name = $form_state['build_info']['args'][0];
+
+  // Set the path variable to the right path
+  if ($values['global_files_path'] === 'public_files') {
+    $path = 'public://adaptivetheme/' . $theme_name . '_files';
+  }
+  elseif ($values['global_files_path'] === 'theme_directory') {
+    $path = drupal_get_path('theme', $theme_name) . '/generated_files';
+  }
+  elseif ($values['global_files_path'] === 'custom_path') {
+    $path = $values['custom_files_path'];
+  }
+
+  // Get the active themes info array
+  $info_array = at_get_info($theme_name);
+
+
+  // $styles_data holds all data for the stylesheet
+  $styles_data = [];
+
+  // Build form elements for each region
+  nubay_superfish_styles_generate_style_data($values, $styles_data);
+
+  if (!empty($styles_data)) {
+    $styles = implode("\n", $styles_data);
+    $styles = preg_replace('/^[ \t]*[\r\n]+/m', '', $styles);
+    $file_name = $theme_name . '.superfish-styles.css';
+    $filepath = "$path/$file_name";
+    file_unmanaged_save_data($styles, $filepath, FILE_EXISTS_REPLACE);
+  }
+  else {
+    $styles = '';
+    $file_name = $theme_name . '.superfish-styles.css';
+    $filepath = "$path/$file_name";
+    file_unmanaged_save_data($styles, $filepath, FILE_EXISTS_REPLACE);
+  }
+}
+
+/**
+ * Utility function to generate styles for Superfish Menu styling extension
+ *
+ * @param $values
+ * @param $styles_data
+ */
+function nubay_superfish_styles_generate_style_data($values, &$styles_data) {
+  if (!empty($values['nubay_superfish_enable'])) {
+    if (!empty($values['nubay_superfish_ul_text_align'])) {
+      $styles_data[] = 'ul.sf-menu {text-align:' . $values['nubay_superfish_ul_text_align'] . ';}';
+    }
+    if (!empty($values['nubay_superfish_li_float'])) {
+      $styles_data[] = 'ul.sf-menu li {float:' . $values['nubay_superfish_li_float'] . ' !important;}';
+    }
+    if (!empty($values['nubay_superfish_li_display'])) {
+      $styles_data[] = 'ul.sf-menu li {display:' . $values['nubay_superfish_li_display'] . ';}';
     }
   }
 }
