@@ -1042,22 +1042,61 @@ function nubay_menu_footer_regions_generate_style_data($values, &$styles_data)
  */
 function nubay_superfish_styles_form(&$form, &$form_state) {
   // primary color
-  $form['at']['nubaystyles_superfish'] = array(
+  $form['at']['nubaystyles_superfish'] = [
     '#type' => 'fieldset',
     '#title' => t('Superfish Menu'),
     '#description' => t('<h3>Superfish Menu</h3><p>Setting styles for the theme via the AT infrastructure</p>'),
-  );
-  $form['at']['nubaystyles_superfish']['superfish'] = array(
+  ];
+
+  $form['at']['nubaystyles_superfish']['superfish'] = [
     '#type' => 'fieldset',
-    '#title' => t('Primary Color'),
+    '#title' => t('Superfish Menu Style'),
     '#description' => t('<h3>Superfish Menu</h3><p>Set styles for superfish menus.</p>'),
-  );
-  $form['at']['nubaystyles_superfish']['superfish']['nubay_superfish_enable'] = array(
+  ];
+
+  $form['at']['nubaystyles_superfish']['superfish']['nubay_superfish_enable'] = [
     '#type' => 'checkbox',
     '#title' => t('<strong>Enable Superfish menu alterations</strong>'),
     '#return' => 1,
     '#default_value' => theme_get_setting('nubay_superfish_enable'),
-  );
+  ];
+
+  if (module_exists('style_library_entity')) {
+    $library_options = ['' => '- None -'];
+    $query = new EntityFieldQuery();
+    $results = $query->entityCondition('entity_type', 'style_library_entity')
+      ->propertyCondition('extension_type', 'superfish')
+      ->propertyCondition('enabled', 1)
+      ->execute();
+
+    if (!empty($results['style_library_entity'])) {
+      $style_libraries = entity_load('style_library_entity', array_keys($results['style_library_entity']));
+      foreach ($style_libraries as $style_library) {
+        $library_options[$style_library->slid] = $style_library->name;
+      }
+    }
+
+    $default_library_id = theme_get_setting('nubay_superfish_style_library');
+    try {
+      if (!empty($default_library_id)) {
+        $default_library = entity_load_single('style_library_entity', $default_library_id);
+        if (empty($default_library->enabled)) {
+          $default_library_id = '';
+        }
+      }
+    }
+    catch (Exception $e) {
+      watchdog('nubay_theme_extension', $e->getMessage());
+    }
+
+    $form['at']['nubaystyles_superfish']['superfish']['nubay_superfish_style_library'] = [
+      '#type'        => 'select',
+      '#title'       => 'Style Libraries',
+      '#description' => 'Choose a pre-configured style library',
+      '#options'     => $library_options,
+      '#default_value' => $default_library_id,
+    ];
+  }
 
   $text_align_options = [
     'left' => 'Left',

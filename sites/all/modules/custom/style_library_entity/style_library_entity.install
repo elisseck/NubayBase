@@ -1,0 +1,237 @@
+<?php
+/**
+ * @file Style Library Entity install, schema, and uninstall
+ */
+
+
+/**
+ * Implements hook_install().
+ */
+function style_library_entity_install() {
+  // add css file field
+  if(!field_info_field('field_style_library_css')) {
+    $field = [
+      'translatable' => '0',
+      'settings'     => [
+        'display_field'   => 0,
+        'display_default' => 0,
+        'uri_scheme'      => 'public',
+      ],
+      'field_name'   => 'field_style_library_css',
+      'type'         => 'file',
+      'active'       => '1',
+      'locked'       => '0',
+      'cardinality'  => '-1',
+    ];
+    field_create_field($field);
+  }
+
+  // create instance
+  $instance = array(
+    'label' => 'CSS Files',
+    'widget' => array(
+      'weight' => '1',
+      'type' => 'file_generic',
+      'active' => 1,
+      'settings' => array(
+        'progress_indicator' => 'throbber',
+      ),
+    ),
+    'settings' => array(
+      'file_directory' => 'style-library-entity/css',
+      'file_extensions' => 'css',
+      'max_filesize' => '',
+      'description_field' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'type' => 'file_default',
+        'settings' => array(),
+        'weight' => 0,
+      ),
+    ),
+    'required' => 0,
+    'description' => '',
+    'field_name' => 'field_style_library_css',
+    'entity_type' => 'style_library_entity',
+    'bundle' => 'style_library_entity',
+  );
+  field_create_instance($instance);
+
+  if(!field_info_field('field_style_library_js')) {
+    $field = [
+      'translatable' => '0',
+      'settings'     => [
+        'display_field'   => 0,
+        'display_default' => 0,
+        'uri_scheme'      => 'public',
+      ],
+      'field_name'   => 'field_style_library_js',
+      'type'         => 'file',
+      'active'       => '1',
+      'locked'       => '0',
+      'cardinality'  => '-1',
+    ];
+    field_create_field($field);
+  }
+
+  // create instance
+  $instance = array(
+    'label' => 'JS Files',
+    'widget' => array(
+      'weight' => '1',
+      'type' => 'file_generic',
+      'active' => 1,
+      'settings' => array(
+        'progress_indicator' => 'throbber',
+      ),
+    ),
+    'settings' => array(
+      'file_directory' => 'style-library-entity/js',
+      'file_extensions' => 'css',
+      'max_filesize' => '',
+      'description_field' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'type' => 'file_default',
+        'settings' => array(),
+        'weight' => 0,
+      ),
+    ),
+    'required' => 0,
+    'description' => '',
+    'field_name' => 'field_style_library_js',
+    'entity_type' => 'style_library_entity',
+    'bundle' => 'style_library_entity',
+  );
+  field_create_instance($instance);
+
+  if(!field_info_field('field_style_library_add_css')) {
+    $field = [
+      'translatable' => '0',
+      'settings'     => [],
+      'field_name'   => 'field_style_library_add_css',
+      'type'         => 'text_long',
+      'active'       => '1',
+      'locked'       => '0',
+      'cardinality'  => '1',
+    ];
+    field_create_field($field);
+  }
+
+  $instance = array(
+    'label' => 'Additional CSS',
+    'widget' => array(
+      'weight' => '2',
+      'type' => 'text_textarea',
+      'active' => 1,
+      'settings' => array(
+        'rows' => '10',
+      ),
+    ),
+    'settings' => array(
+      'text_processing' => '0',
+      'user_register_form' => FALSE,
+    ),
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'type' => 'text_default',
+        'settings' => array(),
+        'weight' => 1,
+      ),
+    ),
+    'required' => 0,
+    'description' => '',
+    'fences_wrapper' => 'div_div_div',
+    'default_value' => NULL,
+    'field_name' => 'field_style_library_add_css',
+    'entity_type' => 'style_library_entity',
+    'bundle' => 'style_library_entity',
+  );
+  field_create_instance($instance);
+
+}
+
+/**
+ * Implements of hook_uninstall().
+ */
+function style_library_entity_uninstall() {
+  variable_del('style_library_entity_settings');
+
+  // delete log view
+  if ($view = views_get_view('style_library_entity_overview')) {
+    views_delete_view($view);
+  }
+
+  field_attach_delete_bundle('style_library_entity', 'style_library_entity');
+
+  // Make sure fields are removed from db
+  // only necessary because standard Drupal cron is not currently running
+  field_sync_field_status();
+  // Do a pass of purging on deleted Field API data, if any exists.
+  $limit = variable_get('field_purge_batch_size', 10);
+  field_purge_batch($limit);
+
+  db_delete('field_config_instance')
+    ->condition('entity_type', 'style_library_entity')
+    ->condition('bundle', 'style_library_entity')
+    ->execute();
+}
+
+
+/**
+ * Implements hook_schema().
+ */
+function style_library_entity_schema() {
+  $schema = array();
+  $schema['style_library_entity'] = array(
+    'description' => 'The base table for Style Library entities.',
+    'fields' => array(
+      'slid' => array(
+        'description' => 'Drupal ID for a Style Library Record.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'name' => array(
+        'description' => 'Style library name',
+        'type' => 'varchar',
+        'length' => '128',
+      ),
+      'extension_type' => array(
+        'description' => 'Theme extension type',
+        'type' => 'varchar',
+        'length' => '92',
+      ),
+      'enabled' => array(
+        'description' => 'Enabled',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 1,
+      ),
+      'created' => array(
+        'description' => 'Created date',
+        'type' => 'int',
+        'not null' => TRUE,
+      ),
+      'updated' => array(
+        'description' => 'Updated date',
+        'type' => 'int',
+        'not null' => TRUE,
+      ),
+    ),
+    'primary key' => array('slid'),
+
+    'indexes' => array(
+      'enabled' => array('enabled'),
+    ),
+  );
+
+  return $schema;
+}
