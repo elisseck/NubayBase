@@ -60,40 +60,43 @@ function nubay_process_comment(&$vars) {
  */
 function nubay_preprocess_block(&$vars) {
   if (module_exists('style_library_entity')) {
-    if (strpos($vars['block_html_id'], 'superfish') !== FALSE) {
-      $style_library_id = theme_get_setting('nubay_superfish_style_library');
-      if (!empty($style_library_id)) {
-        try {
-          $style_library = entity_load_single('style_library_entity', $style_library_id);
-          if (!empty($style_library->enabled)) {
-            // load css file
-            if (!empty($style_library->field_style_library_css['und'])) {
-              foreach ($style_library->field_style_library_css['und'] as $delta => $css_file) {
-                $path = file_create_url($css_file['uri']);
-                drupal_add_css($path,
+    $superfish_extension_enabled = theme_get_setting('nubay_superfish_enable');
+    if (!empty($superfish_extension_enabled)) {
+      if (strpos($vars['block_html_id'], 'superfish') !== FALSE) {
+        $style_library_id = theme_get_setting('nubay_superfish_style_library');
+        if (!empty($style_library_id)) {
+          try {
+            $style_library = entity_load_single('style_library_entity', $style_library_id);
+            if (!empty($style_library->enabled)) {
+              // load css file
+              if (!empty($style_library->field_style_library_css['und'])) {
+                foreach ($style_library->field_style_library_css['und'] as $delta => $css_file) {
+                  $path = file_create_url($css_file['uri']);
+                  drupal_add_css($path,
+                    [
+                      'group'      => CSS_THEME,
+                      'media'      => 'screen',
+                      'preprocess' => FALSE,
+                      'weight'     => '9998',
+                    ]);
+                }
+              }
+              // add css from Additional CSS text field..
+              if (!empty($style_library->field_style_library_add_css['und'][0]['value'])) {
+                drupal_add_css($style_library->field_style_library_add_css['und'][0]['value'],
                   [
                     'group'      => CSS_THEME,
+                    'type'       => 'inline',
                     'media'      => 'screen',
                     'preprocess' => FALSE,
-                    'weight'     => '9998',
+                    'weight'     => '9999',
                   ]);
               }
             }
-            // add css from Additional CSS text field..
-            if (!empty($style_library->field_style_library_add_css['und'][0]['value'])) {
-              drupal_add_css($style_library->field_style_library_add_css['und'][0]['value'],
-                [
-                  'group'      => CSS_THEME,
-                  'type'       => 'inline',
-                  'media'      => 'screen',
-                  'preprocess' => FALSE,
-                  'weight'     => '9999',
-                ]);
-            }
           }
-        }
-        catch (Exception $e) {
-          watchdog('nubay_theme_extension', $e->getMessage());
+          catch (Exception $e) {
+            watchdog('nubay_theme_extension', $e->getMessage());
+          }
         }
       }
     }
