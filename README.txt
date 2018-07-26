@@ -1,6 +1,7 @@
 
 CONTENTS OF THIS FILE
 ---------------------
+test 2
 Test change to dave branch
  * About Drupal
  * Configuration and features
