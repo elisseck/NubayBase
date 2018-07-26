@@ -1,5 +1,7 @@
 Modules extend your site functionality beyond Drupal core.
 
+(Test file modified)
+
 WHAT TO PLACE IN THIS DIRECTORY?
 --------------------------------
 
