@@ -35,11 +35,11 @@ function style_library_entity_package_view($id) {
 
 
 
-function style_library_entity_form_wrapper($entity_id, $op) {
-  return drupal_get_form('style_library_entity_form', $entity_id, $op);
+function style_library_entity_form_wrapper($entity_id, $op, $type = '') {
+  return drupal_get_form('style_library_entity_form', $entity_id, $op, $type);
 }
 
-function style_library_entity_form($form, &$form_state, $entity_id, $op) {
+function style_library_entity_form($form, &$form_state, $entity_id, $op, $type) {
   if ($op == 'update' ) {
     $entity = entity_load('style_library_entity', array($entity_id));
     $entity = $entity[$entity_id];
@@ -52,6 +52,7 @@ function style_library_entity_form($form, &$form_state, $entity_id, $op) {
   elseif ($op == 'create') {
     $entity = new StyleLibraryEntity(array());
     $entity->is_new = TRUE;
+    $entity->type = $type;
     $form_state['entity'] = $entity;
   }
   // Add the field related form elements.
@@ -62,7 +63,9 @@ function style_library_entity_form($form, &$form_state, $entity_id, $op) {
     else {
       $title = 'Add Style Library Entity';
     }
+
     field_attach_form('style_library_entity', $entity, $form, $form_state);
+
     //get entity controller build content
     if ($op == 'update' || $op == 'delete') {
       $wrapper = entity_metadata_wrapper('style_library_entity', $entity);
@@ -94,6 +97,9 @@ function style_library_entity_form($form, &$form_state, $entity_id, $op) {
             'superfish' => 'Superfish',
           ];
           unset($form[$name]['#size']);
+        }
+        if ($name == 'type') {
+          $form[$name]['#default_value'] = $op == 'update' ? $entity->type : $type;
         }
       } // end if isset widget
     } // end foreach child

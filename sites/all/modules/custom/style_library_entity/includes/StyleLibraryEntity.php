@@ -159,6 +159,16 @@ class StyleLibraryEntityMetadataController extends EntityDefaultMetadataControll
       'schema field' => 'slid',
       'widget' => 'hidden',
     );
+    $info[$this->type]['properties']['type'] = array(
+      'label' => t("Type"),
+      'type' => 'text',
+      'description' => t("Type"),
+      'schema field' => 'type',
+      'getter callback' => 'entity_property_verbatim_get',
+      'setter callback' => 'entity_property_verbatim_set',
+      'widget' => 'hidden',
+      'required' => TRUE,
+    );
     $info[$this->type]['properties']['name'] = array(
       'label' => t("Name"),
       'type' => 'text',
@@ -255,17 +265,20 @@ class StyleLibraryEntityUIController extends EntityContentUIController {
       'type' => MENU_DEFAULT_LOCAL_TASK,
       'weight' => -11,
     );
-    $items['admin/appearance/style-library-entity/add'] = array(
-      'title' => 'Add Style Library',
-      'page callback' => 'style_library_entity_form_wrapper',
-      'page arguments' => array(array(), 'create'),
-      'access callback' => 'style_library_entity_entity_access',
-      'access arguments' => array('create'),
-      'file' => 'crud.forms.inc',
-      'file path' => drupal_get_path('module','style_library_entity') . '/forms',
-      'type' => MENU_LOCAL_ACTION,
-      'weight' => -8,
-    );
+
+    foreach (style_library_entity_get_types() as $type) {
+      $items['admin/appearance/style-library-entity/add/' . $type->type] = [
+        'title'            => 'Add ' . $type->label . ' Style Library',
+        'page callback'    => 'style_library_entity_form_wrapper',
+        'page arguments'   => [[], 'create', $type->type],
+        'access callback'  => 'style_library_entity_entity_access',
+        'access arguments' => ['create'],
+        'file'             => 'crud.forms.inc',
+        'file path'        => drupal_get_path('module', 'style_library_entity') . '/forms',
+        'type'             => MENU_LOCAL_ACTION,
+        'weight'           => -8,
+      ];
+    }
 
     $items['admin/appearance/style-library-entity/style-library/%style_library_entity_loader'] = array(
       'page callback' => 'style_library_entity_package_view',
