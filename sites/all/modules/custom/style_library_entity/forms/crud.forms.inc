@@ -94,7 +94,9 @@ function style_library_entity_form($form, &$form_state, $entity_id, $op, $type) 
         if ($name == 'extension_type') {
           $form[$name]['#type'] = 'select';
           $form[$name]['#options'] = [
+            '' => '- None -',
             'superfish' => 'Superfish',
+            'webform' => 'Webform',
           ];
           unset($form[$name]['#size']);
         }

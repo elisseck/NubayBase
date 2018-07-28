@@ -9,6 +9,9 @@
  * Represents a Style Library Entity
  */
 class StyleLibraryEntity extends Entity {
+  public $name;
+  public $type;
+
   /**
    * Constructs a StyleLibraryEntity entity
    */
@@ -172,7 +175,7 @@ class StyleLibraryEntityMetadataController extends EntityDefaultMetadataControll
     $info[$this->type]['properties']['name'] = array(
       'label' => t("Name"),
       'type' => 'text',
-      'description' => t("Name"),
+      'description' => t("Name of the style library."),
       'schema field' => 'name',
       'getter callback' => 'entity_property_verbatim_get',
       'setter callback' => 'entity_property_verbatim_set',
@@ -182,7 +185,7 @@ class StyleLibraryEntityMetadataController extends EntityDefaultMetadataControll
     $info[$this->type]['properties']['extension_type'] = array(
       'label' => t("Extension Type"),
       'type' => 'text',
-      'description' => t("Extension Type"),
+      'description' => t("Theme Extension Type. AT theme extensions generate select lists for choosing style libraries based on this field. For example, the Superfish Menu extension will allow section of all style librares of type Superfish"),
       'schema field' => 'extension_type',
       'getter callback' => 'entity_property_verbatim_get',
       'setter callback' => 'entity_property_verbatim_set',
@@ -192,7 +195,7 @@ class StyleLibraryEntityMetadataController extends EntityDefaultMetadataControll
     $info[$this->type]['properties']['enabled'] = array(
       'label' => t("Enabled"),
       'type' => 'integer',
-      'description' => t("Enabled"),
+      'description' => t("Check to enable the style library. Only enabled style libraries will appear in theme extension lists, and have their style applied to the theme."),
       'schema field' => 'enabled',
       'getter callback' => 'entity_property_verbatim_get',
       'setter callback' => 'entity_property_verbatim_set',

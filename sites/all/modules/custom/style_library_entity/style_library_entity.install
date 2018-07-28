@@ -16,23 +16,20 @@ function style_library_entity_install() {
  */
 function style_library_entity_uninstall() {
   variable_del('style_library_entity_settings');
-  module_load_include('module', 'style_library_entity');
   // delete log view
   if ($view = views_get_view('style_library_entity_overview')) {
     views_delete_view($view);
   }
 
-  $params = array(
+  // Delete all fields of all bundles on module uninstall
+  $params = [
     'entity_type' => 'style_library_entity',
-  );
-
-  foreach (field_read_instances($params, array('include_inactive' => TRUE)) as $instance) {
+  ];
+  foreach (field_read_instances($params, ['include_inactive' => TRUE]) as $instance) {
     $field_name = $instance['field_name'];
     field_delete_instance($instance, FALSE);
-
     // Now check to see if there are any other instances of the field left.
     $field = field_info_field($field_name);
-
     if (count($field['bundles']) == 0) {
       field_delete_field($field_name);
     }
@@ -68,6 +65,7 @@ function style_library_entity_schema() {
         'description' => 'Bundle type',
         'type' => 'varchar',
         'length' => '128',
+        'not null' => TRUE,
       ),
       'name' => array(
         'description' => 'Style library name',

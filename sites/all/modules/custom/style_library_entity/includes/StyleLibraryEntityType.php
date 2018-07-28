@@ -71,7 +71,7 @@ class StyleLibraryEntityTypeController extends EntityAPIControllerExportable {
 }
 
 /**
- * UI controller.
+ * StyleLibraryEntityType UI controller.
  */
 class StyleLibraryEntityTypeUIController extends EntityDefaultUIController {
 
