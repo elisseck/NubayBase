@@ -56,7 +56,9 @@ function nubay_process_comment(&$vars) {
 
 
 /**
- * Override or insert variables into the block templates.
+ * Implements theme_preprocess_block().
+ *
+ * Add Superfish Menu Style Library CSS/JS to theme
  */
 function nubay_preprocess_block(&$vars) {
   if (module_exists('style_library_entity')) {
@@ -67,32 +69,8 @@ function nubay_preprocess_block(&$vars) {
         if (!empty($style_library_id)) {
           try {
             $style_library = entity_load_single('style_library_entity', $style_library_id);
-            if (!empty($style_library->enabled)) {
-              // load css file
-              if (!empty($style_library->field_style_library_css['und'])) {
-                foreach ($style_library->field_style_library_css['und'] as $delta => $css_file) {
-                  $path = file_create_url($css_file['uri']);
-                  drupal_add_css($path,
-                    [
-                      'group'      => CSS_THEME,
-                      'media'      => 'screen',
-                      'preprocess' => FALSE,
-                      'weight'     => '9998',
-                    ]);
-                }
-              }
-              // add css from Additional CSS text field..
-              if (!empty($style_library->field_style_library_add_css['und'][0]['value'])) {
-                drupal_add_css($style_library->field_style_library_add_css['und'][0]['value'],
-                  [
-                    'group'      => CSS_THEME,
-                    'type'       => 'inline',
-                    'media'      => 'screen',
-                    'preprocess' => FALSE,
-                    'weight'     => '9999',
-                  ]);
-              }
-            }
+            style_library_entity_add_style_library_css_to_theme($style_library);
+            style_library_entity_add_style_library_js_to_theme($style_library);
           }
           catch (Exception $e) {
             watchdog('nubay_theme_extension', $e->getMessage());
@@ -103,45 +81,40 @@ function nubay_preprocess_block(&$vars) {
   }
 }
 
-/*
-function nubay_process_block(&$vars) {
+/**
+ * Implements hook_form_alter().
+ *
+ * Add Webform Style Library CSS/JS to theme
+ *
+ * @param $form
+ * @param $form_state
+ * @param $form_id
+ */
+function nubay_form_alter(&$form, &$form_state, $form_id) {
+  // add Webform style library css/js to theme
+  if (strpos($form_id, 'webform_client_form') === 0) {
+    if (module_exists('style_library_entity')) {
+      $style_library_id = theme_get_setting('nubay_webform_style_library');
+      if (!empty($style_library_id)) {
+        try {
+          $style_library = entity_load_single('style_library_entity', $style_library_id);
+          style_library_entity_add_style_library_css_to_theme($style_library);
+          style_library_entity_add_style_library_js_to_theme($style_library);
+        }
+        catch (Exception $e) {
+          watchdog('nubay_theme_extension', $e->getMessage());
+        }
+      }
+    }
+  }
 }
-*/
 
-
+/**
+ * Implements theme_preprocess_html().
+ *
+ * @param $vars
+ */
 function nubay_preprocess_html(&$vars) {
-    
-  /*if (!empty($vars['page']['menu_left']) && !empty($vars['page']['menu_center'])) {
-      $vars['classes_array'][] = 'menu_left';
-  }
-  
-  if (!empty($vars['page']['menu_left']) && !empty($vars['page']['menu_right'])) {
-      $vars['classes_array'][] = 'both_menu';
-  }
-  
-  if (!empty($vars['page']['menu_left']) && !empty($vars['page']['menu_center'] && !empty($vars['page']['menu_right']))) {
-     $vars['classes_array'][] = 'menu_center';
-  }
-  
-  if (!empty($vars['page']['menu_center']) && !empty($vars['page']['menu_right'])) {
-      $vars['classes_array'][] = 'menu_right';
-  }
-
-  if (!empty($vars['page']['footer_left']) && !empty($vars['page']['footer_center'])) {
-      $vars['classes_array'][] = 'footer_left';
-  }
-  
-  if (!empty($vars['page']['footer_left']) && !empty($vars['page']['footer_right'])) {
-      $vars['classes_array'][] = 'both_footer';
-  }
-  
-  if (!empty($vars['page']['footer_left']) && !empty($vars['page']['footer_center'] && !empty($vars['page']['footer_right']))) {
-     $vars['classes_array'][] = 'footer_center';
-  }
-  
-  if (!empty($vars['page']['footer_center']) && !empty($vars['page']['footer_right'])) {
-      $vars['classes_array'][] = 'footer_right';
-  }*/
 
   global $theme_key;
   $theme_name = $theme_key;
@@ -211,6 +184,21 @@ function nubay_preprocess_html(&$vars) {
 
     // superfish menu styles
     $filepath = $path . '/' . $theme_name . '.superfish-styles.css';
+    if (file_exists($filepath)) {
+      drupal_add_css($filepath, array(
+          'preprocess' => TRUE,
+          'group' => CSS_THEME,
+          'media' => 'screen',
+          'every_page' => TRUE,
+        )
+      );
+    }
+    else {
+      at_load_failure($filepath, $theme_name);
+    }
+
+    // webform styles
+    $filepath = $path . '/' . $theme_name . '.webform-styles.css';
     if (file_exists($filepath)) {
       drupal_add_css($filepath, array(
           'preprocess' => TRUE,

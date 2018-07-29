@@ -181,7 +181,7 @@ function style_library_entity_form_field_ui_display_overview_form_alter(&$form, 
  * Submit handler for making sure our display suited entity properties are visible
  */
 function _style_library_entity_manage_display_submit(&$form, &$form_state) {
-  if($form_state['values']['additional_settings']['layout']!=''){
+  if(isset($form_state['values']['additional_settings']['layout']) && $form_state['values']['additional_settings']['layout']!= ''){
     $entity_type = $form['#entity_type'];
     $bundle = $form['#bundle'];
     $bundle_settings = field_bundle_settings($entity_type, $bundle);
@@ -551,4 +551,76 @@ function style_library_entity_entity_insert($entity, $type) {
     field_create_instance($instance);
   }
 
+}
+
+/**
+ * Utility function to compile all Style Library CSS sources and add to the theme
+ *
+ * @param $style_library
+ */
+function style_library_entity_add_style_library_css_to_theme($style_library) {
+  if (!empty($style_library->enabled)) {
+    // load css file
+    if (!empty($style_library->field_style_library_css['und'])) {
+      foreach ($style_library->field_style_library_css['und'] as $delta => $css_file) {
+        $path = file_create_url($css_file['uri']);
+        drupal_add_css($path,
+          [
+            'group'      => CSS_THEME,
+            'media'      => 'screen',
+            'preprocess' => FALSE,
+            'weight'     => '9997',
+          ]);
+      }
+    }
+
+    if (module_exists('style_library_field_css')) {
+      $css = style_library_field_get_css_for_style_library($style_library);
+      if (!empty($css)) {
+        drupal_add_css($css,
+          [
+            'group'      => CSS_THEME,
+            'type'       => 'inline',
+            'media'      => 'screen',
+            'preprocess' => FALSE,
+            'weight'     => '9998',
+          ]);
+      }
+    }
+
+    // add css from Additional CSS text field..
+    if (!empty($style_library->field_style_library_add_css['und'][0]['value'])) {
+      drupal_add_css($style_library->field_style_library_add_css['und'][0]['value'],
+        [
+          'group'      => CSS_THEME,
+          'type'       => 'inline',
+          'media'      => 'screen',
+          'preprocess' => FALSE,
+          'weight'     => '9999',
+        ]);
+    }
+  }
+}
+
+/**
+ * Utility function to add style library js to theme
+ *
+ * @param $style_library
+ */
+function style_library_entity_add_style_library_js_to_theme($style_library) {
+  if (!empty($style_library->enabled)) {
+    // load css file
+    if (!empty($style_library->field_style_library_js['und'])) {
+      foreach ($style_library->field_style_library_js['und'] as $delta => $js_file) {
+        $path = file_create_url($js_file['uri']);
+        drupal_add_js($path,
+          [
+            'group'      => JS_THEME,
+            'scope'      => 'header',
+            'every_page' => TRUE,
+            'weight'     => '9997',
+          ]);
+      }
+    }
+  }
 }
