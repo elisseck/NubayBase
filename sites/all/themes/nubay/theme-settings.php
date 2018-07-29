@@ -15,6 +15,7 @@ function nubay_form_system_theme_settings_alter(&$form, &$form_state) {
     nubay_block_margins_form($form, $form_state);
     nubay_menu_footer_regions_form($form, $form_state);
     nubay_superfish_styles_form($form, $form_state);
+    nubay_webform_styles_form($form, $form_state);
   }
 }
 
@@ -1140,7 +1141,7 @@ function nubay_superfish_styles_form(&$form, &$form_state) {
 }
 
 /**
- * Submit handler for the Menu/Footer Inline Regions extension settings form, generate css based on settings chosen
+ * Submit handler for the Superfish Menu extension settings form, generate css based on settings chosen
  *
  * @param $form
  * @param $form_state
@@ -1205,5 +1206,134 @@ function nubay_superfish_styles_generate_style_data($values, &$styles_data) {
     if (!empty($values['nubay_superfish_li_display'])) {
       $styles_data[] = 'ul.sf-menu li {display:' . $values['nubay_superfish_li_display'] . ';}';
     }
+  }
+}
+
+/**
+ * Webform extension form alterations
+ *
+ * @param $form
+ * @param $form_state
+ */
+function nubay_webform_styles_form(&$form, &$form_state) {
+  $form['at']['nubaystyles_webform'] = [
+    '#type' => 'fieldset',
+    '#title' => t('Webform'),
+    '#description' => t('<h3>Webform</h3><p>Setting styles for the theme via the AT infrastructure</p>'),
+  ];
+
+  $form['at']['nubaystyles_webform']['webform'] = [
+    '#type' => 'fieldset',
+    '#title' => t('Webform Style'),
+    '#description' => t('<h3>Webform</h3><p>Set styles for webforms.</p>'),
+  ];
+
+  $form['at']['nubaystyles_webform']['webform']['nubay_webform_enable'] = [
+    '#type' => 'checkbox',
+    '#title' => t('<strong>Enable Webform alterations</strong>'),
+    '#return' => 1,
+    '#default_value' => theme_get_setting('nubay_webform_enable'),
+  ];
+
+  if (module_exists('style_library_entity')) {
+    $library_options = ['' => '- None -'];
+    $query = new EntityFieldQuery();
+    $results = $query->entityCondition('entity_type', 'style_library_entity')
+      ->propertyCondition('extension_type', 'webform')
+      ->propertyCondition('enabled', 1)
+      ->execute();
+
+    if (!empty($results['style_library_entity'])) {
+      $style_libraries = entity_load('style_library_entity', array_keys($results['style_library_entity']));
+      foreach ($style_libraries as $style_library) {
+        $library_options[$style_library->slid] = $style_library->name;
+      }
+    }
+
+    $default_library_id = theme_get_setting('nubay_webform_style_library');
+    try {
+      if (!empty($default_library_id)) {
+        $default_library = entity_load_single('style_library_entity', $default_library_id);
+        if (empty($default_library->enabled)) {
+          $default_library_id = '';
+        }
+      }
+    }
+    catch (Exception $e) {
+      watchdog('nubay_theme_extension', $e->getMessage());
+    }
+
+    $form['at']['nubaystyles_webform']['webform']['nubay_webform_style_library'] = [
+      '#type'        => 'select',
+      '#title'       => 'Style Libraries',
+      '#description' => 'Choose a pre-configured style library',
+      '#options'     => $library_options,
+      '#default_value' => $default_library_id,
+    ];
+  }
+
+  $form['#submit'][] = 'nubay_webform_styles_theme_settings_submit';
+}
+
+/**
+ * Submit handler for the Webform extension settings form, generate css based on settings chosen
+ *
+ * @param $form
+ * @param $form_state
+ */
+function nubay_webform_styles_theme_settings_submit($form, $form_state) {
+  // Set form_state values into one variable
+  $values = $form_state['values'];
+
+  // Get the active theme name, $theme_key will return the admin theme
+  $theme_name = $form_state['build_info']['args'][0];
+
+  // Set the path variable to the right path
+  if ($values['global_files_path'] === 'public_files') {
+    $path = 'public://adaptivetheme/' . $theme_name . '_files';
+  }
+  elseif ($values['global_files_path'] === 'theme_directory') {
+    $path = drupal_get_path('theme', $theme_name) . '/generated_files';
+  }
+  elseif ($values['global_files_path'] === 'custom_path') {
+    $path = $values['custom_files_path'];
+  }
+
+  // Get the active themes info array
+  $info_array = at_get_info($theme_name);
+
+
+  // $styles_data holds all data for the stylesheet
+  $styles_data = [];
+
+  // Build form elements for each region
+
+  nubay_webform_styles_generate_style_data($values, $styles_data);
+
+  if (!empty($styles_data)) {
+    $styles = implode("\n", $styles_data);
+    $styles = preg_replace('/^[ \t]*[\r\n]+/m', '', $styles);
+    $file_name = $theme_name . '.webform-styles.css';
+    $filepath = "$path/$file_name";
+    file_unmanaged_save_data($styles, $filepath, FILE_EXISTS_REPLACE);
+  }
+  else {
+    $styles = '';
+    $file_name = $theme_name . '.webform-styles.css';
+    $filepath = "$path/$file_name";
+    file_unmanaged_save_data($styles, $filepath, FILE_EXISTS_REPLACE);
+  }
+
+}
+
+/**
+ * Utility function to generate styles for Webform styling extension
+ *
+ * @param $values
+ * @param $styles_data
+ */
+function nubay_webform_styles_generate_style_data($values, &$styles_data) {
+  if (!empty($values['nubay_webform_enable'])) {
+
   }
 }

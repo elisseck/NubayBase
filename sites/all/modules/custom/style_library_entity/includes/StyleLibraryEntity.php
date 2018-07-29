@@ -9,6 +9,9 @@
  * Represents a Style Library Entity
  */
 class StyleLibraryEntity extends Entity {
+  public $name;
+  public $type;
+
   /**
    * Constructs a StyleLibraryEntity entity
    */
@@ -159,10 +162,20 @@ class StyleLibraryEntityMetadataController extends EntityDefaultMetadataControll
       'schema field' => 'slid',
       'widget' => 'hidden',
     );
+    $info[$this->type]['properties']['type'] = array(
+      'label' => t("Type"),
+      'type' => 'text',
+      'description' => t("Type"),
+      'schema field' => 'type',
+      'getter callback' => 'entity_property_verbatim_get',
+      'setter callback' => 'entity_property_verbatim_set',
+      'widget' => 'hidden',
+      'required' => TRUE,
+    );
     $info[$this->type]['properties']['name'] = array(
       'label' => t("Name"),
       'type' => 'text',
-      'description' => t("Name"),
+      'description' => t("Name of the style library."),
       'schema field' => 'name',
       'getter callback' => 'entity_property_verbatim_get',
       'setter callback' => 'entity_property_verbatim_set',
@@ -172,7 +185,7 @@ class StyleLibraryEntityMetadataController extends EntityDefaultMetadataControll
     $info[$this->type]['properties']['extension_type'] = array(
       'label' => t("Extension Type"),
       'type' => 'text',
-      'description' => t("Extension Type"),
+      'description' => t("Theme Extension Type. AT theme extensions generate select lists for choosing style libraries based on this field. For example, the Superfish Menu extension will allow section of all style librares of type Superfish"),
       'schema field' => 'extension_type',
       'getter callback' => 'entity_property_verbatim_get',
       'setter callback' => 'entity_property_verbatim_set',
@@ -182,7 +195,7 @@ class StyleLibraryEntityMetadataController extends EntityDefaultMetadataControll
     $info[$this->type]['properties']['enabled'] = array(
       'label' => t("Enabled"),
       'type' => 'integer',
-      'description' => t("Enabled"),
+      'description' => t("Check to enable the style library. Only enabled style libraries will appear in theme extension lists, and have their style applied to the theme."),
       'schema field' => 'enabled',
       'getter callback' => 'entity_property_verbatim_get',
       'setter callback' => 'entity_property_verbatim_set',
@@ -255,17 +268,20 @@ class StyleLibraryEntityUIController extends EntityContentUIController {
       'type' => MENU_DEFAULT_LOCAL_TASK,
       'weight' => -11,
     );
-    $items['admin/appearance/style-library-entity/add'] = array(
-      'title' => 'Add Style Library',
-      'page callback' => 'style_library_entity_form_wrapper',
-      'page arguments' => array(array(), 'create'),
-      'access callback' => 'style_library_entity_entity_access',
-      'access arguments' => array('create'),
-      'file' => 'crud.forms.inc',
-      'file path' => drupal_get_path('module','style_library_entity') . '/forms',
-      'type' => MENU_LOCAL_ACTION,
-      'weight' => -8,
-    );
+
+    foreach (style_library_entity_get_types() as $type) {
+      $items['admin/appearance/style-library-entity/add/' . $type->type] = [
+        'title'            => 'Add ' . $type->label . ' Style Library',
+        'page callback'    => 'style_library_entity_form_wrapper',
+        'page arguments'   => [[], 'create', $type->type],
+        'access callback'  => 'style_library_entity_entity_access',
+        'access arguments' => ['create'],
+        'file'             => 'crud.forms.inc',
+        'file path'        => drupal_get_path('module', 'style_library_entity') . '/forms',
+        'type'             => MENU_LOCAL_ACTION,
+        'weight'           => -8,
+      ];
+    }
 
     $items['admin/appearance/style-library-entity/style-library/%style_library_entity_loader'] = array(
       'page callback' => 'style_library_entity_package_view',
