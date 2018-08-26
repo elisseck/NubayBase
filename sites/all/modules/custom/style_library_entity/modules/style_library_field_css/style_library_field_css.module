@@ -23,7 +23,7 @@ function style_library_field_css_field_info() {
 /**
  * Helper function to post process data and remove of white spaces, { and }.
  *
- * It also post converts feeform widgets fields into the structured data fields.
+ * It also post converts freeform widgets fields into the structured data fields.
  */
 function style_library_field_css_post_process($widget_type, $items) {
   switch ($widget_type) {
@@ -304,12 +304,33 @@ function style_library_field_css_get_prefix($field, $entity_type, $entity) {
 }
 
 /**
+ * Implements hook_field_load().
+ *
+ * @param $entity_type
+ * @param $entities
+ * @param $field
+ * @param $instances
+ * @param $langcode
+ * @param $items
+ * @param $age
+ */
+function style_library_field_css_field_load($entity_type, $entities, $field, $instances, $langcode, &$items, $age) {
+  foreach($entities as $entity_id => $entity) {
+    // expand stored value, only for field instances with structured widget
+    if ($instances[$entity_id]['widget']['type'] == 'style_library_field_css_structured_widget') {
+      $expanded_items = _style_library_field_css_expand_items($items[$entity_id]);
+      unset($items);
+      foreach ($expanded_items as $delta => $item) {
+        $items[$entity_id][$delta] = $item;
+      }
+    }
+  }
+}
+
+/**
  * Implements hook_field_widget_form().
  */
 function style_library_field_css_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
-  // Expand stored values.
-  _style_library_field_css_expand_items($items);
-
   $value = isset($items[$delta]) ? $items[$delta] : array("selector" => "", "style" => "",);
   switch ($instance['widget']['type']) {
 
@@ -361,7 +382,7 @@ function style_library_field_css_field_widget_form(&$form, &$form_state, $field,
 
     case 'style_library_field_css_freeform_widget':
 
-      //if ($delta === 0) {
+      if ($delta === 0) {
         $element['style'] = array(
           '#type' => 'textarea',
           '#title' => '',
@@ -371,10 +392,10 @@ function style_library_field_css_field_widget_form(&$form, &$form_state, $field,
           '#default_value' => style_library_field_css_parse_fields($items),
           '#attributes' => array('class' => array("field-css-style", "field-css-wrapped")),
         );
-     /* }
+      }
       else {
         $element = NULL;
-      }*/
+      }
       break;
   }
   if (isset($element['style'])) {

@@ -23,7 +23,7 @@ function style_library_entity_package_view($id) {
   if (!empty($entity)) {
     $controller = entity_get_controller('style_library_entity');
     $content = $controller->view(array($id => $entity));
-    drupal_set_title('Style Library Entity ID: ' . $entity->label());
+    drupal_set_title('Style Library: ' . $entity->label());
 
   }
   else {
@@ -75,6 +75,13 @@ function style_library_entity_form($form, &$form_state, $entity_id, $op, $type) 
     }
     
     $form_state['entity_wrapper'] = $wrapper;
+    $form['style_library_entity_properties'] = [
+      '#type' => 'fieldset',
+      '#title' => t('Style Library Properties'),
+      '#collapsible' => TRUE,
+      '#collapsed' => FALSE,
+      '#weight' => -9999,
+    ];
 
     foreach ($wrapper as $name => $child) {
       $info = $child->info();
@@ -82,26 +89,26 @@ function style_library_entity_form($form, &$form_state, $entity_id, $op, $type) 
         continue;
       }
       if(isset($info['widget'])) {
-        $form[$name] = array(
+        $form['style_library_entity_properties'][$name] = array(
           '#type' => $info['widget'],
           '#title' => $info['label'],
           '#description' => !empty($info['description']) ? $info['description'] : '',
           '#default_value' => $op == 'update' ? $child->value() : '',
           );
         if(isset($info['required']) && $info['required']){
-          $form[$name]['#required'] = TRUE;
+          $form['style_library_entity_properties'][$name]['#required'] = TRUE;
         }
         if ($name == 'extension_type') {
-          $form[$name]['#type'] = 'select';
-          $form[$name]['#options'] = [
+          $form['style_library_entity_properties'][$name]['#type'] = 'select';
+          $form['style_library_entity_properties'][$name]['#options'] = [
             '' => '- None -',
             'superfish' => 'Superfish',
             'webform' => 'Webform',
           ];
-          unset($form[$name]['#size']);
+          unset($form['style_library_entity_properties'][$name]['#size']);
         }
         if ($name == 'type') {
-          $form[$name]['#default_value'] = $op == 'update' ? $entity->type : $type;
+          $form['style_library_entity_properties'][$name]['#default_value'] = $op == 'update' ? $entity->type : $type;
         }
       } // end if isset widget
     } // end foreach child
