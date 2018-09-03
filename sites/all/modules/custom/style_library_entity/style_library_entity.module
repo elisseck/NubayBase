@@ -624,3 +624,38 @@ function style_library_entity_add_style_library_js_to_theme($style_library) {
     }
   }
 }
+
+/**
+ * Utility function to query style libraries by type, bundle, enabled (all optional)
+ *
+ * @param string $bundle
+ * @param string $type
+ * @param int $enabled
+ *
+ * @return array
+ */
+function style_library_entity_get_style_libraries($type = '', $bundle = '', $enabled = 1) {
+  $library_options = [];
+  $query = new EntityFieldQuery();
+  $query->entityCondition('entity_type', 'style_library_entity');
+  if (!empty($bundle)) {
+    $query->entityCondition('bundle', $bundle);
+  }
+  if (!empty($type)) {
+    $query->propertyCondition('extension_type', 'civicrm');
+  }
+  $query->propertyCondition('enabled', $enabled);
+  try {
+    $results = $query->execute();
+  }
+  catch (Exception $e) {
+    watchdog('style_entity_library', $e->getMessage());
+  }
+  if (!empty($results['style_library_entity'])) {
+    $style_libraries = entity_load('style_library_entity', array_keys($results['style_library_entity']));
+    foreach ($style_libraries as $style_library) {
+      $library_options[$style_library->slid] = $style_library->name;
+    }
+  }
+  return $library_options;
+}

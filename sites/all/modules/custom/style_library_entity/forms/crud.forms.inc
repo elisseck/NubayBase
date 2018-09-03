@@ -102,6 +102,7 @@ function style_library_entity_form($form, &$form_state, $entity_id, $op, $type) 
           $form['style_library_entity_properties'][$name]['#type'] = 'select';
           $form['style_library_entity_properties'][$name]['#options'] = [
             '' => '- None -',
+            'civicrm' => 'CiviCRM',
             'superfish' => 'Superfish',
             'webform' => 'Webform',
           ];
