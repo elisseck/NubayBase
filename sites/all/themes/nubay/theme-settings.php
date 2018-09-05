@@ -16,33 +16,6 @@ function nubay_form_system_theme_settings_alter(&$form, &$form_state) {
     nubay_menu_footer_regions_form($form, $form_state);
     nubay_superfish_styles_form($form, $form_state);
     nubay_webform_styles_form($form, $form_state);
-    nubay_civicrm_styles_form($form, $form_state);
-  }
-}
-
-/**
- * Utility function to generate css files from a styles_data array
- *
- * @param $theme_name
- * @param $file_name_portion
- * @param $styles_data
- */
-function nubay_custom_extensions_generate_css_files_from_styles_data($theme_name, $file_name_portion, $styles_data) {
-  // Set the path variable to the right path
-  $path = variable_get('theme_' . $theme_name . '_files_directory');
-
-  if (!empty($styles_data)) {
-    $styles = implode("\n", $styles_data);
-    $styles = preg_replace('/^[ \t]*[\r\n]+/m', '', $styles);
-    $file_name = $theme_name . '.' . $file_name_portion . '.css';
-    $filepath = "$path/$file_name";
-    file_unmanaged_save_data($styles, $filepath, FILE_EXISTS_REPLACE);
-  }
-  else {
-    $styles = '';
-    $file_name = $theme_name . '.' . $file_name_portion . '.css';
-    $filepath = "$path/$file_name";
-    file_unmanaged_save_data($styles, $filepath, FILE_EXISTS_REPLACE);
   }
 }
 
@@ -250,6 +223,17 @@ function nubay_color_styles_theme_settings_submit(&$form, &$form_state) {
   // Get the active theme name, $theme_key will return the admin theme
   $theme_name = $form_state['build_info']['args'][0];
 
+  // Set the path variable to the right path
+  if ($values['global_files_path'] === 'public_files') {
+    $path = 'public://adaptivetheme/' . $theme_name . '_files';
+  }
+  elseif ($values['global_files_path'] === 'theme_directory') {
+    $path = drupal_get_path('theme', $theme_name) . '/generated_files';
+  }
+  elseif ($values['global_files_path'] === 'custom_path') {
+    $path = $values['custom_files_path'];
+  }
+
   // $styles_data holds all data for the stylesheet
   $styles_data = [];
 
@@ -260,7 +244,20 @@ function nubay_color_styles_theme_settings_submit(&$form, &$form_state) {
     nubay_themestyles_generate_style_data_secondary_color($values, $styles_data);
   }
 
-  nubay_custom_extensions_generate_css_files_from_styles_data($theme_name, 'themestyles', $styles_data);
+
+  if (!empty($styles_data)) {
+    $styles = implode("\n", $styles_data);
+    $styles = preg_replace('/^[ \t]*[\r\n]+/m', '', $styles);
+    $file_name = $theme_name . '.themestyles.css';
+    $filepath = "$path/$file_name";
+    file_unmanaged_save_data($styles, $filepath, FILE_EXISTS_REPLACE);
+  }
+  else {
+    $styles = '';
+    $file_name = $theme_name . '.themestyles.css';
+    $filepath = "$path/$file_name";
+    file_unmanaged_save_data($styles, $filepath, FILE_EXISTS_REPLACE);
+  }
 }
 
 /**
@@ -487,6 +484,17 @@ function nubay_inline_block_theme_settings_submit($form, $form_state) {
   // Get the active theme name, $theme_key will return the admin theme
   $theme_name = $form_state['build_info']['args'][0];
 
+  // Set the path variable to the right path
+  if ($values['global_files_path'] === 'public_files') {
+    $path = 'public://adaptivetheme/' . $theme_name . '_files';
+  }
+  elseif ($values['global_files_path'] === 'theme_directory') {
+    $path = drupal_get_path('theme', $theme_name) . '/generated_files';
+  }
+  elseif ($values['global_files_path'] === 'custom_path') {
+    $path = $values['custom_files_path'];
+  }
+
   // Get the active themes info array
   $info_array = at_get_info($theme_name);
 
@@ -520,7 +528,19 @@ function nubay_inline_block_theme_settings_submit($form, $form_state) {
     }
   }
 
-  nubay_custom_extensions_generate_css_files_from_styles_data($theme_name, 'inlineblock-styles', $styles_data);
+  if (!empty($styles_data)) {
+    $styles = implode("\n", $styles_data);
+    $styles = preg_replace('/^[ \t]*[\r\n]+/m', '', $styles);
+    $file_name = $theme_name . '.inlineblock-styles.css';
+    $filepath = "$path/$file_name";
+    file_unmanaged_save_data($styles, $filepath, FILE_EXISTS_REPLACE);
+  }
+  else {
+    $styles = '';
+    $file_name = $theme_name . '.inlineblock-styles.css';
+    $filepath = "$path/$file_name";
+    file_unmanaged_save_data($styles, $filepath, FILE_EXISTS_REPLACE);
+  }
 }
 
 /**
@@ -655,6 +675,17 @@ function nubay_block_margins_theme_settings_submit($form, $form_state) {
   // Get the active theme name, $theme_key will return the admin theme
   $theme_name = $form_state['build_info']['args'][0];
 
+  // Set the path variable to the right path
+  if ($values['global_files_path'] === 'public_files') {
+    $path = 'public://adaptivetheme/' . $theme_name . '_files';
+  }
+  elseif ($values['global_files_path'] === 'theme_directory') {
+    $path = drupal_get_path('theme', $theme_name) . '/generated_files';
+  }
+  elseif ($values['global_files_path'] === 'custom_path') {
+    $path = $values['custom_files_path'];
+  }
+
   // Get the active themes info array
   $info_array = at_get_info($theme_name);
 
@@ -675,7 +706,20 @@ function nubay_block_margins_theme_settings_submit($form, $form_state) {
       nubay_block_margins_generate_style_data($values, $region_name, $styles_data);
     }
   }
-  nubay_custom_extensions_generate_css_files_from_styles_data($theme_name, 'blockmargins-styles', $styles_data);
+
+  if (!empty($styles_data)) {
+    $styles = implode("\n", $styles_data);
+    $styles = preg_replace('/^[ \t]*[\r\n]+/m', '', $styles);
+    $file_name = $theme_name . '.blockmargins-styles.css';
+    $filepath = "$path/$file_name";
+    file_unmanaged_save_data($styles, $filepath, FILE_EXISTS_REPLACE);
+  }
+  else {
+    $styles = '';
+    $file_name = $theme_name . '.blockmargins-styles.css';
+    $filepath = "$path/$file_name";
+    file_unmanaged_save_data($styles, $filepath, FILE_EXISTS_REPLACE);
+  }
 }
 
 /**
@@ -871,12 +915,40 @@ function nubay_menu_footer_regions_theme_settings_submit($form, $form_state) {
   // Get the active theme name, $theme_key will return the admin theme
   $theme_name = $form_state['build_info']['args'][0];
 
+  // Set the path variable to the right path
+  if ($values['global_files_path'] === 'public_files') {
+    $path = 'public://adaptivetheme/' . $theme_name . '_files';
+  }
+  elseif ($values['global_files_path'] === 'theme_directory') {
+    $path = drupal_get_path('theme', $theme_name) . '/generated_files';
+  }
+  elseif ($values['global_files_path'] === 'custom_path') {
+    $path = $values['custom_files_path'];
+  }
+
+  // Get the active themes info array
+  $info_array = at_get_info($theme_name);
+
+
   // $styles_data holds all data for the stylesheet
   $styles_data = [];
 
   // Build form elements for each region
   nubay_menu_footer_regions_generate_style_data($values, $styles_data);
-  nubay_custom_extensions_generate_css_files_from_styles_data($theme_name, 'inlineregions-styles', $styles_data);
+
+  if (!empty($styles_data)) {
+    $styles = implode("\n", $styles_data);
+    $styles = preg_replace('/^[ \t]*[\r\n]+/m', '', $styles);
+    $file_name = $theme_name . '.inlineregions-styles.css';
+    $filepath = "$path/$file_name";
+    file_unmanaged_save_data($styles, $filepath, FILE_EXISTS_REPLACE);
+  }
+  else {
+    $styles = '';
+    $file_name = $theme_name . '.inlineregions-styles.css';
+    $filepath = "$path/$file_name";
+    file_unmanaged_save_data($styles, $filepath, FILE_EXISTS_REPLACE);
+  }
 }
 
 /**
@@ -1081,12 +1153,40 @@ function nubay_superfish_styles_theme_settings_submit($form, $form_state) {
   // Get the active theme name, $theme_key will return the admin theme
   $theme_name = $form_state['build_info']['args'][0];
 
+  // Set the path variable to the right path
+  if ($values['global_files_path'] === 'public_files') {
+    $path = 'public://adaptivetheme/' . $theme_name . '_files';
+  }
+  elseif ($values['global_files_path'] === 'theme_directory') {
+    $path = drupal_get_path('theme', $theme_name) . '/generated_files';
+  }
+  elseif ($values['global_files_path'] === 'custom_path') {
+    $path = $values['custom_files_path'];
+  }
+
+  // Get the active themes info array
+  $info_array = at_get_info($theme_name);
+
+
   // $styles_data holds all data for the stylesheet
   $styles_data = [];
 
   // Build form elements for each region
   nubay_superfish_styles_generate_style_data($values, $styles_data);
-  nubay_custom_extensions_generate_css_files_from_styles_data($theme_name, 'superfish-styles', $styles_data);
+
+  if (!empty($styles_data)) {
+    $styles = implode("\n", $styles_data);
+    $styles = preg_replace('/^[ \t]*[\r\n]+/m', '', $styles);
+    $file_name = $theme_name . '.superfish-styles.css';
+    $filepath = "$path/$file_name";
+    file_unmanaged_save_data($styles, $filepath, FILE_EXISTS_REPLACE);
+  }
+  else {
+    $styles = '';
+    $file_name = $theme_name . '.superfish-styles.css';
+    $filepath = "$path/$file_name";
+    file_unmanaged_save_data($styles, $filepath, FILE_EXISTS_REPLACE);
+  }
 }
 
 /**
@@ -1137,7 +1237,18 @@ function nubay_webform_styles_form(&$form, &$form_state) {
 
   if (module_exists('style_library_entity')) {
     $library_options = ['' => '- None -'];
-    $library_options += style_library_entity_get_style_libraries('webform');
+    $query = new EntityFieldQuery();
+    $results = $query->entityCondition('entity_type', 'style_library_entity')
+      ->propertyCondition('extension_type', 'webform')
+      ->propertyCondition('enabled', 1)
+      ->execute();
+
+    if (!empty($results['style_library_entity'])) {
+      $style_libraries = entity_load('style_library_entity', array_keys($results['style_library_entity']));
+      foreach ($style_libraries as $style_library) {
+        $library_options[$style_library->slid] = $style_library->name;
+      }
+    }
 
     $default_library_id = theme_get_setting('nubay_webform_style_library');
     try {
@@ -1177,11 +1288,42 @@ function nubay_webform_styles_theme_settings_submit($form, $form_state) {
   // Get the active theme name, $theme_key will return the admin theme
   $theme_name = $form_state['build_info']['args'][0];
 
+  // Set the path variable to the right path
+  if ($values['global_files_path'] === 'public_files') {
+    $path = 'public://adaptivetheme/' . $theme_name . '_files';
+  }
+  elseif ($values['global_files_path'] === 'theme_directory') {
+    $path = drupal_get_path('theme', $theme_name) . '/generated_files';
+  }
+  elseif ($values['global_files_path'] === 'custom_path') {
+    $path = $values['custom_files_path'];
+  }
+
+  // Get the active themes info array
+  $info_array = at_get_info($theme_name);
+
+
   // $styles_data holds all data for the stylesheet
   $styles_data = [];
 
+  // Build form elements for each region
+
   nubay_webform_styles_generate_style_data($values, $styles_data);
-  nubay_custom_extensions_generate_css_files_from_styles_data($theme_name, 'webform-styles', $styles_data);
+
+  if (!empty($styles_data)) {
+    $styles = implode("\n", $styles_data);
+    $styles = preg_replace('/^[ \t]*[\r\n]+/m', '', $styles);
+    $file_name = $theme_name . '.webform-styles.css';
+    $filepath = "$path/$file_name";
+    file_unmanaged_save_data($styles, $filepath, FILE_EXISTS_REPLACE);
+  }
+  else {
+    $styles = '';
+    $file_name = $theme_name . '.webform-styles.css';
+    $filepath = "$path/$file_name";
+    file_unmanaged_save_data($styles, $filepath, FILE_EXISTS_REPLACE);
+  }
+
 }
 
 /**
@@ -1192,94 +1334,6 @@ function nubay_webform_styles_theme_settings_submit($form, $form_state) {
  */
 function nubay_webform_styles_generate_style_data($values, &$styles_data) {
   if (!empty($values['nubay_webform_enable'])) {
-
-  }
-}
-
-/**
- * CiviCRM extension form alterations
- *
- * @param $form
- * @param $form_state
- */
-function nubay_civicrm_styles_form(&$form, &$form_state) {
-  $form['at']['nubaystyles_civicrm'] = [
-    '#type' => 'fieldset',
-    '#title' => t('CiviCRM'),
-    '#description' => t('<h3>CiviCRM</h3><p>Setting styles for the theme via the AT infrastructure</p>'),
-  ];
-
-  $form['at']['nubaystyles_civicrm']['civicrm'] = [
-    '#type' => 'fieldset',
-    '#title' => t('CiviCRM Style'),
-    '#description' => t('<h3>CiviCRM</h3><p>Set styles for public CiviCRM pages.</p>'),
-  ];
-
-  $form['at']['nubaystyles_civicrm']['civicrm']['nubay_civicrm_enable'] = [
-    '#type' => 'checkbox',
-    '#title' => t('<strong>Enable CiviCRM alterations</strong>'),
-    '#return' => 1,
-    '#default_value' => theme_get_setting('nubay_civicrm_enable'),
-  ];
-
-  if (module_exists('style_library_entity')) {
-    $library_options = ['' => '- None -'];
-    $library_options += style_library_entity_get_style_libraries('civicrm');
-
-    $default_library_id = theme_get_setting('nubay_civicrm_style_library');
-    try {
-      if (!empty($default_library_id)) {
-        $default_library = entity_load_single('style_library_entity', $default_library_id);
-        if (empty($default_library->enabled)) {
-          $default_library_id = '';
-        }
-      }
-    }
-    catch (Exception $e) {
-      watchdog('nubay_theme_extension', $e->getMessage());
-    }
-
-    $form['at']['nubaystyles_civicrm']['civicrm']['nubay_civicrm_style_library'] = [
-      '#type'        => 'select',
-      '#title'       => 'Style Libraries',
-      '#description' => 'Choose a pre-configured style library',
-      '#options'     => $library_options,
-      '#default_value' => $default_library_id,
-    ];
-  }
-
-  $form['#submit'][] = 'nubay_civicrm_styles_theme_settings_submit';
-}
-
-/**
- * Submit handler for the CiviCRM extension settings form, generate css based on settings chosen
- *
- * @param $form
- * @param $form_state
- */
-function nubay_civicrm_styles_theme_settings_submit($form, $form_state) {
-  // Set form_state values into one variable
-  $values = $form_state['values'];
-
-  // Get the active theme name, $theme_key will return the admin theme
-  $theme_name = $form_state['build_info']['args'][0];
-
-  // $styles_data holds all data for the stylesheet
-  $styles_data = [];
-
-  nubay_civicrm_styles_generate_style_data($values, $styles_data);
-
-  nubay_custom_extensions_generate_css_files_from_styles_data($theme_name, 'civicrm-styles', $styles_data);
-}
-
-/**
- * Utility function to generate styles for CiviCRM styling extension
- *
- * @param $values
- * @param $styles_data
- */
-function nubay_civicrm_styles_generate_style_data($values, &$styles_data) {
-  if (!empty($values['nubay_civicrm_enable'])) {
 
   }
 }
