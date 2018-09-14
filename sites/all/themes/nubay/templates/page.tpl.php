@@ -18,15 +18,15 @@
 			<?php if ($page['menu_left']): ?>
 				<div class="menu_left"><?php print render($page['menu_left']); ?></div>
 			<?php endif; ?>
-			
+
 			<?php if ($page['menu_center']): ?>
 				<div class="menu_center"><?php print render($page['menu_center']); ?></div>
 			<?php endif; ?>
-			
+
 			<?php if ($page['menu_right']): ?>
 				<div class="menu_right"><?php print render($page['menu_right']); ?></div>
 			<?php endif; ?>
-			
+
 		</div>
 	</div>
 <?php endif; ?>
@@ -47,7 +47,7 @@
           <div class="content-inner">
 
             <<?php print $tag; ?> id="main-content" role="main">
-            <?php if ($messages || $page['help']): ?>
+            <?php if ($messages || isset($page['help'])): ?>
                 <div id="messages-help-wrapper">
                     <div class="container clearfix">
                       <?php print $messages; ?>
@@ -60,7 +60,7 @@
                     <?php print render($page['above_content']); ?>
                   </div>
               <?php endif; ?>
-                  
+
               <?php if ($primary_local_tasks): ?>
                 <div id="tasks" class="clearfix">
 
@@ -105,8 +105,8 @@
                   <div id="content">
                     <?php print render($page['content']); ?>
                   </div>
-                  
-                  
+
+
 
                   <?php print $feed_icons; ?>
 
@@ -118,7 +118,7 @@
                   </div>
               <?php endif; ?>
             </<?php print $tag; // end main content ?>>
-            
+
 
             <?php print render($page['content_aside']); ?>
 
@@ -133,8 +133,8 @@
 
   </div>
 
-    
-   
+
+
 <?php if ($page['footer_top']): ?>
 	<div class="whole_footer_top">
 		<div class="footer_top container"><?php print render($page['footer_top']); ?></div>
@@ -163,6 +163,6 @@
 	</div>
 <?php endif; ?>
 
- 
+
 </div>
 </div>
